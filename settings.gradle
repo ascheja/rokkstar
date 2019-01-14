@@ -1,2 +1,4 @@
 rootProject.name = "rockstar-kotlin"
 include ":typesystem"
+include ":ast"
+
