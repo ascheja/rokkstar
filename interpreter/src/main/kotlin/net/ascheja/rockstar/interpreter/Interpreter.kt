@@ -7,7 +7,7 @@ import net.ascheja.rockstar.typesystem.values.*
 
 class Interpreter(private val context: Context): Visitor<Action> {
 
-    override fun visit(program: Program): Action {
+    override fun visitProgram(program: Program): Action {
         return visitBlockStatement(program.root)
     }
 

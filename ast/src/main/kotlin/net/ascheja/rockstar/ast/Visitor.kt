@@ -4,7 +4,7 @@ import net.ascheja.rockstar.ast.expressions.*
 import net.ascheja.rockstar.ast.statements.*
 
 interface Visitor<T> {
-    fun visit(program: Program): T = visitBlockStatement(program.root)
+    fun visitProgram(program: Program): T = visitBlockStatement(program.root)
 
     fun visitStatement(statement: Statement): T = when (statement) {
         is AssignmentStatement -> visitAssignmentStatement(statement)
