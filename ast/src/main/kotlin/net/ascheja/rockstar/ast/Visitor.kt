@@ -4,9 +4,24 @@ import net.ascheja.rockstar.ast.expressions.*
 import net.ascheja.rockstar.ast.statements.*
 
 interface Visitor<T> {
-    fun visit(program: Program): T
+    fun visit(program: Program): T = visitBlockStatement(program.root)
 
-    fun visitStatement(statement: Statement): T
+    fun visitStatement(statement: Statement): T = when (statement) {
+        is AssignmentStatement -> visitAssignmentStatement(statement)
+        is BlockStatement -> visitBlockStatement(statement)
+        is BreakStatement -> visitBreakStatement(statement)
+        is ContinueStatement -> visitContinueStatement(statement)
+        is FunctionDeclaration -> visitFunctionDeclaration(statement)
+        is IfStatement -> visitIfStatement(statement)
+        is IncrementStatement -> visitIncrementStatement(statement)
+        is DecrementStatement -> visitDecrementStatement(statement)
+        is LoopStatement -> visitLoopStatement(statement)
+        is PrintLineStatement -> visitPrintLineStatement(statement)
+        is ReadLineStatement -> visitReadLineStatement(statement)
+        is ReturnStatement -> visitReturnStatement(statement)
+        is Expression -> visitExpression(statement)
+        else -> throw IllegalArgumentException("Unknown type of statement: ${statement.javaClass}")
+    }
 
     fun visitAssignmentStatement(assignmentStatement: AssignmentStatement): T
 
@@ -32,7 +47,18 @@ interface Visitor<T> {
 
     fun visitReturnStatement(returnStatement: ReturnStatement): T
 
-    fun visitExpression(expression: Expression): T
+    fun visitExpression(expression: Expression): T = when (expression) {
+        is BinaryOperatorExpression -> visitBinaryOperatorExpression(expression)
+        is UnaryOperatorExpression -> visitUnaryOperatorExpression(expression)
+        is FunctionCallExpression -> visitFunctionCallExpression(expression)
+        is NumberLiteralExpression -> visitNumberLiteralExpression(expression)
+        is StringLiteralExpression -> visitStringLiteralExpression(expression)
+        is BooleanLiteralExpression -> visitBooleanLiteralExpression(expression)
+        is NullLiteralExpression -> visitNullLiteralExpression(expression)
+        is UndefinedLiteralExpression -> visitUndefinedLiteralExpression(expression)
+        is VariableExpression -> visitVariableExpression(expression)
+        else -> throw IllegalArgumentException("Unknown type of expression: ${expression.javaClass}")
+    }
 
     fun visitBinaryOperatorExpression(binaryOperatorExpression: BinaryOperatorExpression): T
 
