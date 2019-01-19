@@ -73,7 +73,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     override fun visitIncrementStatement(incrementStatement: IncrementStatement): Action {
         var toAdd = incrementStatement.amount
         while (toAdd > 0) {
-            context[incrementStatement.variableName] = context[incrementStatement.variableName].inc()
+            context[incrementStatement.variableName] = ++context[incrementStatement.variableName]
             toAdd--
         }
         return Action.Proceed()
@@ -82,7 +82,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     override fun visitDecrementStatement(decrementStatement: DecrementStatement): Action {
         var toSubtract = decrementStatement.amount
         while (toSubtract > 0) {
-            context[decrementStatement.name] = context[decrementStatement.name].dec()
+            context[decrementStatement.name] = --context[decrementStatement.name]
             toSubtract--
         }
         return Action.Proceed()
