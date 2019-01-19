@@ -11,4 +11,6 @@ class Identifier(val value: String) {
     override fun hashCode(): Int {
         return value.toLowerCase().hashCode()
     }
+
+    override fun toString(): String = value
 }
