@@ -32,7 +32,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     }
 
     override fun visitAssignmentStatement(assignmentStatement: AssignmentStatement): Action {
-        context[assignmentStatement.variableName] = visitExpression(assignmentStatement.expression).value
+        context[assignmentStatement.identifier] = visitExpression(assignmentStatement.expression).value
         return Action.Proceed()
     }
 
@@ -55,7 +55,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     }
 
     override fun visitFunctionDeclaration(functionDeclaration: FunctionDeclaration): Action {
-        context[functionDeclaration.functionName] = functionDeclaration
+        context[functionDeclaration.identifier] = functionDeclaration
         return Action.Proceed()
     }
 
@@ -73,7 +73,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     override fun visitIncrementStatement(incrementStatement: IncrementStatement): Action {
         var toAdd = incrementStatement.amount
         while (toAdd > 0) {
-            context[incrementStatement.variableName] = ++context[incrementStatement.variableName]
+            context[incrementStatement.identifier] = (context.getValue(incrementStatement.identifier)).inc()
             toAdd--
         }
         return Action.Proceed()
@@ -82,7 +82,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     override fun visitDecrementStatement(decrementStatement: DecrementStatement): Action {
         var toSubtract = decrementStatement.amount
         while (toSubtract > 0) {
-            context[decrementStatement.name] = --context[decrementStatement.name]
+            context[decrementStatement.identifier] = (context.getValue(decrementStatement.identifier)).dec()
             toSubtract--
         }
         return Action.Proceed()
@@ -105,7 +105,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     }
 
     override fun visitReadLineStatement(readLineStatement: ReadLineStatement): Action {
-        context[readLineStatement.variableName] = StringValue(context.readLine())
+        context[readLineStatement.identifier] = StringValue(context.readLine())
         return Action.Proceed()
     }
 
@@ -160,7 +160,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     }
 
     override fun visitFunctionCallExpression(functionCallExpression: FunctionCallExpression): Action.Return {
-        val declaration = context[functionCallExpression.name]
+        val declaration = context.getFunction(functionCallExpression.identifier)
         val functionCallContext = context.fork()
         val arguments = functionCallExpression.arguments.map { visitExpression(it).value }
         for ((index, name) in declaration.parameters.withIndex()) {
@@ -204,6 +204,6 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
     }
 
     override fun visitVariableExpression(variableExpression: VariableExpression): Action.Return {
-        return Action.Return(context[variableExpression.variableName])
+        return Action.Return(context.getValue(variableExpression.identifier))
     }
 }

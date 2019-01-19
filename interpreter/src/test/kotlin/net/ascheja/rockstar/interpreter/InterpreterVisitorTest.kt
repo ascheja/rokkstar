@@ -17,10 +17,10 @@ class InterpreterVisitorTest {
     fun visitAssignmentStatement() {
         withContext("", createOutput {}) {
             val visitor = InterpreterVisitor(this)
-            val variableName = VariableName("some var")
-            assertSame(UndefinedValue.INSTANCE, this[variableName])
+            val variableName = Identifier("some var")
+            assertSame(UndefinedValue.INSTANCE, getValue(variableName))
             visitor.visitStatement(AssignmentStatement(variableName, StringLiteralExpression("42")))
-            assertEquals("42", this[variableName].toString())
+            assertEquals("42", getValue(variableName).toString())
         }
     }
 
@@ -70,8 +70,8 @@ class InterpreterVisitorTest {
     fun visitFunctionDeclaration() {
         withContext("", createOutput {}) {
             val visitor = InterpreterVisitor(this)
-            val functionName = FunctionName("my function")
-            assertFalse(this[functionName].functionName == functionName)
+            val functionName = Identifier("my function")
+            assertFalse(getFunction(functionName).identifier == functionName)
             visitor.visitStatement(
                 FunctionDeclaration(
                     functionName,
@@ -79,7 +79,7 @@ class InterpreterVisitorTest {
                     BlockStatement(emptyList())
                 )
             )
-            assertTrue(this[functionName].functionName == functionName)
+            assertTrue(getFunction(functionName).identifier == functionName)
         }
     }
 
@@ -115,22 +115,22 @@ class InterpreterVisitorTest {
     @Test
     fun visitIncrementStatement() {
         withContext("", createOutput {}) {
-            val variableName = VariableName("my variable")
+            val variableName = Identifier("my variable")
             this[variableName] = NumberValue(1.0)
             val visitor = InterpreterVisitor(this)
             visitor.visitStatement(IncrementStatement(variableName, 1))
-            assertEquals(2.0, this[variableName].toNumber(), 0.0)
+            assertEquals(2.0, getValue(variableName).toNumber(), 0.0)
         }
     }
 
     @Test
     fun visitDecrementStatement() {
         withContext("", createOutput {}) {
-            val variableName = VariableName("my variable")
+            val variableName = Identifier("my variable")
             this[variableName] = NumberValue(2.0)
             val visitor = InterpreterVisitor(this)
             visitor.visitStatement(DecrementStatement(variableName, 1))
-            assertEquals(1.0, this[variableName].toNumber(), 0.0)
+            assertEquals(1.0, getValue(variableName).toNumber(), 0.0)
         }
     }
 
@@ -149,7 +149,7 @@ class InterpreterVisitorTest {
 
         withContext("", createOutput { yield("bla"); yield("bla") }) {
             val visitor = InterpreterVisitor(this)
-            val variableName = VariableName("my var")
+            val variableName = Identifier("my var")
             this[variableName] = NumberValue(2.0)
             visitor.visitStatement(
                 LoopStatement(
@@ -176,14 +176,14 @@ class InterpreterVisitorTest {
     fun visitReadLineStatement() {
         withContext("Hello World!", createOutput {}) {
             val visitor = InterpreterVisitor(this)
-            val varName = VariableName("my var")
-            assertSame(UndefinedValue.INSTANCE, this[varName])
+            val varName = Identifier("my var")
+            assertSame(UndefinedValue.INSTANCE, getValue(varName))
             visitor.visitStatement(
                 ReadLineStatement(
                     varName
                 )
             )
-            assertEquals("Hello World!", this[varName].toString())
+            assertEquals("Hello World!", getValue(varName).toString())
         }
     }
 
@@ -207,8 +207,8 @@ class InterpreterVisitorTest {
     @Test
     fun visitFunctionCallExpression() {
         withContext("", createOutput {}) {
-            val functionName = FunctionName("my function")
-            val functionParameterName = VariableName("my var")
+            val functionName = Identifier("my function")
+            val functionParameterName = Identifier("my var")
             this[functionName] = FunctionDeclaration(
                 functionName,
                 listOf(functionParameterName),
@@ -224,7 +224,7 @@ class InterpreterVisitorTest {
                     )
                 ).value.toString()
             )
-            assertSame(UndefinedValue.INSTANCE, this[functionParameterName])
+            assertSame(UndefinedValue.INSTANCE, getValue(functionParameterName))
         }
     }
 

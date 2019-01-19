@@ -1,7 +1,6 @@
 package net.ascheja.rockstar.interpreter
 
-import net.ascheja.rockstar.ast.FunctionName
-import net.ascheja.rockstar.ast.VariableName
+import net.ascheja.rockstar.ast.Identifier
 import net.ascheja.rockstar.ast.expressions.UndefinedLiteralExpression
 import net.ascheja.rockstar.ast.statements.BlockStatement
 import net.ascheja.rockstar.ast.statements.FunctionDeclaration
@@ -15,12 +14,12 @@ class Context private constructor(
     private val parent: Context?
 ) {
 
-    private val functionDeclarations: MutableMap<FunctionName, FunctionDeclaration> = mutableMapOf()
-    private val variables: MutableMap<VariableName, Value> = mutableMapOf()
+    private val functionDeclarations: MutableMap<Identifier, FunctionDeclaration> = mutableMapOf()
+    private val variables: MutableMap<Identifier, Value> = mutableMapOf()
 
     companion object {
         private val UNDEFINED_FUNCTION = FunctionDeclaration(
-            FunctionName(""),
+            Identifier(""),
             listOf(),
             BlockStatement(listOf(ReturnStatement(UndefinedLiteralExpression())))
         )
@@ -29,21 +28,21 @@ class Context private constructor(
             Context(input, output, null)
     }
 
-    operator fun set(name: FunctionName, declaration: FunctionDeclaration) {
+    operator fun set(name: Identifier, declaration: FunctionDeclaration) {
         functionDeclarations[name] = declaration
-        variables.remove(VariableName(name.value))
+        variables.remove(Identifier(name.value))
     }
 
-    operator fun get(name: FunctionName): FunctionDeclaration =
-        functionDeclarations[name] ?: parent?.get(name) ?: UNDEFINED_FUNCTION
+    fun getFunction(name: Identifier): FunctionDeclaration =
+        functionDeclarations[name] ?: parent?.getFunction(name) ?: UNDEFINED_FUNCTION
 
-    operator fun set(name: VariableName, value: Value) {
+    operator fun set(name: Identifier, value: Value) {
         variables[name] = value
-        functionDeclarations.remove(FunctionName(name.value))
+        functionDeclarations.remove(name)
     }
 
-    operator fun get(name: VariableName): Value =
-        variables[name] ?: parent?.get(name) ?: UndefinedValue.INSTANCE
+    fun getValue(name: Identifier): Value =
+        variables[name] ?: parent?.getValue(name) ?: UndefinedValue.INSTANCE
 
     fun println(value: Value) = output(value)
 

@@ -1,6 +1,6 @@
 package net.ascheja.rockstar.ast.statements
 
 import net.ascheja.rockstar.ast.Statement
-import net.ascheja.rockstar.ast.VariableName
+import net.ascheja.rockstar.ast.Identifier
 
-data class ReadLineStatement(val variableName: VariableName): Statement
+data class ReadLineStatement(val identifier: Identifier): Statement
