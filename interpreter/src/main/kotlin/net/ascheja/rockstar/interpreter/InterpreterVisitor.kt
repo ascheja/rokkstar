@@ -113,18 +113,8 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
         return visitExpression(returnStatement.expression)
     }
 
-    override fun visitExpression(expression: Expression): Action.Return = when (expression) {
-        is BinaryOperatorExpression -> visitBinaryOperatorExpression(expression)
-        is UnaryOperatorExpression -> visitUnaryOperatorExpression(expression)
-        is FunctionCallExpression -> visitFunctionCallExpression(expression)
-        is NumberLiteralExpression -> visitNumberLiteralExpression(expression)
-        is StringLiteralExpression -> visitStringLiteralExpression(expression)
-        is BooleanLiteralExpression -> visitBooleanLiteralExpression(expression)
-        is NullLiteralExpression -> visitNullLiteralExpression(expression)
-        is UndefinedLiteralExpression -> visitUndefinedLiteralExpression(expression)
-        is VariableExpression -> visitVariableExpression(expression)
-        else -> throw IllegalArgumentException("Unknown type of expression: ${expression.javaClass}")
-    }
+    override fun visitExpression(expression: Expression): Action.Return =
+        super.visitExpression(expression) as Action.Return
 
     override fun visitBinaryOperatorExpression(binaryOperatorExpression: BinaryOperatorExpression): Action.Return {
         val left = binaryOperatorExpression.left
