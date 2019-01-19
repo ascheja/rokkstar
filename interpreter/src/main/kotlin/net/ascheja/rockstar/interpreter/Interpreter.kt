@@ -5,7 +5,7 @@ import net.ascheja.rockstar.ast.expressions.*
 import net.ascheja.rockstar.ast.statements.*
 import net.ascheja.rockstar.typesystem.values.*
 
-class InterpreterVisitor(private val context: Context): Visitor<Action> {
+class Interpreter(private val context: Context): Visitor<Action> {
 
     override fun visit(program: Program): Action {
         return visitBlockStatement(program.root)
@@ -156,7 +156,7 @@ class InterpreterVisitor(private val context: Context): Visitor<Action> {
         for ((index, name) in declaration.parameters.withIndex()) {
             functionCallContext[name] = if (index < arguments.size) arguments[index] else UndefinedValue.INSTANCE
         }
-        val child = InterpreterVisitor(functionCallContext)
+        val child = Interpreter(functionCallContext)
         val result = when(val bodyAction = child.visitBlockStatement(declaration.body)) {
             is Action.Return -> bodyAction.value
             else -> UndefinedValue.INSTANCE
