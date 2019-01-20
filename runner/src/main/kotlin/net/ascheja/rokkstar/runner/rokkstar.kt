@@ -1,0 +1,144 @@
+package net.ascheja.rokkstar.runner
+
+import com.fasterxml.jackson.databind.SerializationFeature
+import net.ascheja.rokkstar.ast.Program
+import net.ascheja.rokkstar.interpreter.Context
+import net.ascheja.rokkstar.interpreter.Interpreter
+import java.io.File
+import io.ktor.application.*
+import io.ktor.features.CORS
+import io.ktor.features.ContentNegotiation
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.jackson
+import io.ktor.response.respond
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.io.ByteReadChannel
+import kotlinx.coroutines.io.readUTF8Line
+import kotlinx.coroutines.withTimeout
+import net.ascheja.rokkstar.parser.*
+import net.ascheja.rokkstar.typesystem.Value
+import java.lang.RuntimeException
+import kotlin.system.exitProcess
+
+const val TWO_MEGS = 2 * 1024 * 1024
+
+fun main(args: Array<String>) {
+    if (args.size != 2) {
+        displayHelp()
+    }
+    when (args[0]) {
+        "transpile:js" -> transpileJs(parseProgram(File(args[1])))
+        "run" -> runProgram(parseProgram(File(args[1])))
+        "api" -> runApi(args[1].toInt())
+        else -> displayHelp()
+    }
+}
+
+fun runApi(port: Int) {
+    embeddedServer(Netty, port) {
+        install(ContentNegotiation) {
+            jackson {
+                enable(SerializationFeature.INDENT_OUTPUT)
+            }
+        }
+        install(CORS) {
+            method(HttpMethod.Post)
+            anyHost()
+        }
+        routing {
+            post("/run") {
+                val output = mutableListOf<String>()
+                val errors = mutableListOf<String>()
+                val success = try {
+                    withTimeout(2000) {
+                        try {
+                            val body = readBody(call.request.receiveChannel())
+                            val program = parseProgram(body)
+                            runProgram(program, { "" }, { value -> output.add(value.toString()) })
+                            return@withTimeout true
+                        } catch (e: UnexpectedTokenException) {
+                            errors.add("Unexpected token: ${e.message}")
+                        } catch (e: ParserException) {
+                            errors.add("Parser error: ${e.message}")
+                        } catch (e: RuntimeException) {
+                            errors.add(e.message ?: e.javaClass.simpleName)
+                        }
+                        return@withTimeout false
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    errors.add("timeout reached")
+                    false
+                }
+                call.respond(if (success) HttpStatusCode.OK else HttpStatusCode.BadRequest, RunResult(output, errors))
+            }
+
+            post("/transpile/js") {
+                val errors = mutableListOf<String>()
+                val transpiled = try {
+                    withTimeout(2000) {
+                        try {
+                            val body = readBody(call.request.receiveChannel())
+                            val program = parseProgram(body)
+                            return@withTimeout JavascriptTranspiler().visitProgram(program)
+                        } catch (e: UnexpectedTokenException) {
+                            errors.add("Unexpected token: ${e.message}")
+                        } catch (e: ParserException) {
+                            errors.add("Parser error: ${e.message}")
+                        } catch (e: RuntimeException) {
+                            errors.add(e.message ?: e.javaClass.simpleName)
+                        }
+                        return@withTimeout null
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    errors.add("timeout reached")
+                    null
+                }
+                call.respond(if (transpiled != null) HttpStatusCode.OK else HttpStatusCode.BadRequest, TranspileResult(transpiled, errors))
+            }
+        }
+    }.start(wait = true)
+}
+
+suspend fun readBody(receiveChannel: ByteReadChannel): String {
+    var body = ""
+    while (true) {
+        val line = receiveChannel.readUTF8Line() ?: break
+        body += line
+        body += "\n"
+        if (body.length > TWO_MEGS) {
+            throw RuntimeException("content too long, max 2MiB allowed")
+        }
+    }
+    return body
+}
+
+fun transpileJs(program: Program) {
+    val visitor = JavascriptTranspiler()
+    println(visitor.visitProgram(program))
+}
+
+fun displayHelp(): Nothing {
+    println("rokkstar run <file>             // run the provided file with the rockstar interpreter")
+    println("rokkstar transpile:js <file>    // transpile the provided file to javascript (output to stdout)")
+    println("rokkstar api <port>             // runs the api on the given port")
+    exitProcess(1)
+}
+
+fun parseProgram(file: File): Program = StatementParser(Lexer(file.readText()).tokens).parseProgram()
+
+fun parseProgram(content: String): Program {
+    return StatementParser(Lexer(content).tokens).parseProgram()
+}
+
+fun runProgram(
+    program: Program,
+    reader: () -> String = { System.`in`.bufferedReader().readLine() },
+    writer: (Value) -> Unit = { println(it) }
+) {
+    val context = Context.create(reader, writer)
+    Interpreter(context).visitProgram(program)
+}
