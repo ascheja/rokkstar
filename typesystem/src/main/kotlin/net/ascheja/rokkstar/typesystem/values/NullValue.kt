@@ -29,9 +29,8 @@ class NullValue private constructor(): Value {
 
     override fun div(other: Value): Value = throw UndefinedBehaviorException("/ not defined for null")
 
-    override fun inc(): Value = throw UndefinedBehaviorException("++ not defined for null")
-
-    override fun dec(): Value = throw UndefinedBehaviorException("-- not defined for null")
+    override fun inc(): Value = NumberValue(1.0)
+    override fun dec(): Value = NumberValue(-1.0)
 
     override fun compareTo(other: Value): Int = when (other) {
         is NullValue -> 0

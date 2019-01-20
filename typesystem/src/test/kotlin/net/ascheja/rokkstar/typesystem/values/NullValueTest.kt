@@ -15,8 +15,8 @@ class NullValueTest: ValueTest() {
             { NullValue.INSTANCE * UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for null"),
             { NullValue.INSTANCE / UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for null"),
 
-            { NullValue.INSTANCE.inc() } shouldFailWith  UndefinedBehaviorException("++ not defined for null"),
-            { NullValue.INSTANCE.dec() } shouldFailWith  UndefinedBehaviorException("-- not defined for null")
+            { NullValue.INSTANCE.inc() } shouldSucceedWith NumberValue(1.0),
+            { NullValue.INSTANCE.dec() } shouldSucceedWith NumberValue(-1.0)
         )
     override val conversionExamples: Set<ConversionExample>
         get() = setOf(NullValue.INSTANCE.withConversions("null", false, 0.0))
