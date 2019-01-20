@@ -13,7 +13,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
 
     fun parseStatement(): Statement {
         return when {
-            currentToken == KW_ELSE -> throw ParserException("else without if")
+            currentToken == KW_ELSE -> throw UnexpectedTokenException("else without if")
             currentToken == KW_LISTEN -> parseListenTo()
             currentToken == KW_IF -> parseIf()
             currentToken in setOf(KW_SAY, KW_SCREAM, KW_SHOUT, KW_WHISPER) -> parseSay()
