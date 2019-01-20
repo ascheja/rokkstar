@@ -92,9 +92,9 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe KW_TAKES
         next()
         val parameters = extractParameters().map {
-            Identifier(it.joinToString("") {token -> token.text.trim()})
+            Identifier(it.joinToString("") {token -> token.text}.trim())
         }
-        next() mustBe Eol()
+        next()
         return FunctionDeclaration(identifier, parameters, parseBlockStatement())
     }
 
