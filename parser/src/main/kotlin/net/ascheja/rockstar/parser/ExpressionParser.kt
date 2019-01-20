@@ -7,12 +7,6 @@ import net.ascheja.rockstar.parser.Token.*
 
 class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space} + Eof()) {
 
-    companion object {
-        val AMPERSAND = Garbage('&')
-        val COMMA = Garbage(',')
-        val NUMERIC_CHECK = Regex("[0-9]+")
-    }
-
     fun parseExpression(): Expression {
         return parseLogicalExpression()
     }
@@ -140,9 +134,9 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
         val argumentTokens: MutableList<List<Token>> = mutableListOf()
         var start = index
         while (index < tokens.size) {
-            if (currentToken in setOf(ExpressionParser.AMPERSAND, ExpressionParser.COMMA, Word("n"))) {
+            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"))) {
                 argumentTokens.add(tokens.subList(start, index))
-                if (currentToken == ExpressionParser.COMMA && lookahead(1) == KW_AND) {
+                if (currentToken == COMMA && lookahead(1) == KW_AND) {
                     next()
                 }
                 next()

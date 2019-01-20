@@ -92,6 +92,9 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
             Garbage(','), Garbage('&'), KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE,
             KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT, KW_TIMES, KW_OF, KW_OVER
         )
+        val AMPERSAND = Garbage('&')
+        val COMMA = Garbage(',')
+        val NUMERIC_CHECK = Regex("[0-9]+")
     }
 
     protected var index = 0

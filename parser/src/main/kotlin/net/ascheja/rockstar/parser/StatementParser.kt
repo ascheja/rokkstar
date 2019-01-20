@@ -7,10 +7,6 @@ import net.ascheja.rockstar.parser.Token.*
 
 class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Comment}) {
 
-    companion object {
-        val NUMERIC_CHECK = Regex("[0-9]+")
-    }
-
     fun parseProgram(): Program {
         return Program(parseBlockStatement())
     }
@@ -284,9 +280,9 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         val argumentTokens: MutableList<List<Token>> = mutableListOf()
         var start = index
         while (index < tokens.size) {
-            if (currentToken in setOf(ExpressionParser.AMPERSAND, ExpressionParser.COMMA, Word("n"), KW_AND, Eol())) {
+            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol())) {
                 argumentTokens.add(tokens.subList(start, index))
-                if (currentToken == ExpressionParser.COMMA && lookahead(1) == KW_AND) {
+                if (currentToken == COMMA && lookahead(1) == KW_AND) {
                     next()
                 }
                 if (currentToken == Eol()) {
