@@ -100,10 +100,11 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
     protected val currentToken: Token
         get() = tokens[index]
 
-    protected fun next() {
+    protected fun next(): Token {
         if (index + 1 < tokens.size) {
             index++
         }
+        return currentToken
     }
 
     protected fun forwardToNext(
