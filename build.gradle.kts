@@ -5,7 +5,7 @@ plugins {
 }
 
 allprojects {
-    group = "net.ascheja.rockstar"
+    group = "net.ascheja.rokkstar"
     version = "1.0-SNAPSHOT"
 
     repositories {

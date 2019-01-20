@@ -1,4 +1,4 @@
-rootProject.name = "rockstar-kotlin"
+rootProject.name = "rokkstar"
 include ":typesystem"
 include ":ast"
 include ":interpreter"
