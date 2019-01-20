@@ -31,9 +31,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             currentToken == KW_GIVE -> parseReturn()
             else -> {
                 val identifier = parseIdentifier()
-                if (currentToken !is Word) {
-                    forwardToNext(eol = false)
-                }
+                skipToNextWordIfNecessary()
                 when (currentToken) {
                     KW_IS, KW_WAS, KW_WERE -> parseLiteralAssignment(identifier)
                     KW_TAKES -> parseFunctionDeclaration(identifier)
@@ -48,12 +46,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe KW_SAYS
         next() mustBe Space()
         next()
-        val allUntilEol = mutableListOf<String>()
-        while (currentToken !in setOf(Eol(), Eof())) {
-            allUntilEol.add(currentToken.text)
-            next()
-        }
-        return AssignmentStatement(identifier, StringLiteralExpression(allUntilEol.joinToString("")))
+        return AssignmentStatement(identifier, StringLiteralExpression(skipToNextEolOrEof().joinToString("") { it.text}))
     }
 
     private fun parseLiteralAssignment(identifier: Identifier): Statement {
@@ -111,12 +104,8 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe KW_GIVE
         next() mustBe Space()
         next() mustBe KW_BACK
-        next()
-        val start = index
-        while (currentToken !in setOf(Eol(), Eof())) {
-            next()
-        }
-        return ReturnStatement(parseExpression(tokens.subList(start, index)))
+        next() mustBe Space()
+        return ReturnStatement(parseExpression(skipToNextEolOrEof()))
     }
 
     private fun parseIncrement(): IncrementStatement {
@@ -131,7 +120,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         next()
         var amount = 1
         while (currentToken == Garbage(',')) {
-            forwardToNext()
+            skipToNextWordIfNecessary()
             if (currentToken != KW_UP) {
                 throw UnexpectedTokenException(currentToken.text)
             }
@@ -150,7 +139,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         next()
         var amount = 1
         while (currentToken == Garbage(',')) {
-            forwardToNext()
+            skipToNextWordIfNecessary()
             if (currentToken != KW_DOWN) {
                 throw UnexpectedTokenException(currentToken.text)
             }
@@ -161,16 +150,12 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
     }
 
     private fun parseContinue(): ContinueStatement {
-        while (currentToken !is Eol) {
-            next()
-        }
+        skipToNextEolOrEof()
         return ContinueStatement()
     }
 
     private fun parseBreak(): BreakStatement {
-        while (currentToken !is Eol) {
-            next()
-        }
+        skipToNextEolOrEof()
         return BreakStatement()
     }
 
@@ -179,11 +164,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         next()
         currentToken mustBe Space()
         next()
-        val start = index
-        while (currentToken !in setOf(Eol(), Eol())) {
-            next()
-        }
-        val condition = parseExpression(tokens.subList(start, index))
+        val condition = parseExpression(skipToNextEolOrEof())
         next()
         val thenBlock = parseBlockStatement()
         val elseBlock = if (currentToken == KW_ELSE) {
@@ -199,11 +180,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe KW_WHILE
         next() mustBe Space()
         next()
-        val start = index
-        while (currentToken !is Eol && currentToken !is Eof) {
-            next()
-        }
-        val condition = parseExpression(tokens.subList(start, index))
+        val condition = parseExpression(skipToNextEolOrEof())
         next()
         return WhileLoopStatement(condition, parseBlockStatement())
     }
@@ -212,11 +189,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe KW_UNTIL
         next() mustBe Space()
         next()
-        val start = index
-        while (currentToken !is Eol && currentToken !is Eof) {
-            next()
-        }
-        val condition = parseExpression(tokens.subList(start, index))
+        val condition = parseExpression(skipToNextEolOrEof())
         next()
         return UntilLoopStatement(condition, parseBlockStatement())
     }
@@ -227,8 +200,8 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             if (currentToken == KW_ELSE) {
                 break
             }
-            if (currentToken !is Word && currentToken !is Eol) {
-                forwardToNext()
+            while (currentToken !is Word && currentToken !is Eol) {
+                next()
             }
             if (currentToken is Eof || currentToken is Eol) {
                 break
@@ -259,11 +232,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         currentToken mustBe any(KW_SAY, KW_SHOUT, KW_SCREAM, KW_WHISPER)
         next() mustBe Space()
         next()
-        val start = index
-        while (currentToken !is Eol && currentToken !is Eof) {
-            next()
-        }
-        return PrintLineStatement(parseExpression(tokens.subList(start, index)))
+        return PrintLineStatement(parseExpression(skipToNextEolOrEof()))
     }
 
     private fun parsePutInto(): AssignmentStatement {

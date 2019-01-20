@@ -107,27 +107,22 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         return currentToken
     }
 
-    protected fun forwardToNext(
-        word: Boolean = true,
-        eol: Boolean = true,
-        whitespace: Boolean = false,
-        garbage: Boolean = false,
-        comment: Boolean = false
-    ) {
-        val wordFilter: (Token) -> Boolean = { !word && it is Space }
-        val eolFilter: (Token) -> Boolean = { !eol && it is Eol }
-        val spaceFilter: (Token) -> Boolean = { !whitespace && it is Space }
-        val garbageFilter: (Token) -> Boolean = { !garbage && it is Garbage }
-        val commentFilter: (Token) -> Boolean = { !comment && it is Space }
-        do {
+    protected fun skipToNextEolOrEof(): List<Token> {
+        val skipped = mutableListOf<Token>()
+        while (currentToken !in setOf(Eol(), Eof())) {
+            skipped.add(currentToken)
             next()
-        } while (
-            wordFilter(currentToken)
-            || eolFilter(currentToken)
-            || spaceFilter(currentToken)
-            || garbageFilter(currentToken)
-            || commentFilter(currentToken)
-        )
+        }
+        return skipped
+    }
+
+    protected fun skipToNextWordIfNecessary(): List<Token> {
+        val skipped = mutableListOf<Token>()
+        while (currentToken !is Word) {
+            skipped.add(currentToken)
+            next()
+        }
+        return skipped
     }
 
     protected fun lookahead(n: Int): Token = if (index + n < tokens.size) {
@@ -171,7 +166,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
     protected fun parseIdentifier(): Identifier = Identifier(parseName())
 
     private fun parseName(): String {
-        currentToken mustBe Token.Type.WORD
+        currentToken mustBe Type.WORD
         if (currentToken in PRONOUNS) {
             next()
             return lastName ?: throw UnexpectedTokenException("found pronoun, but no identifier has been mentioned previously")
@@ -179,16 +174,19 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         return if (currentToken in COMMON_VARIABLE_PREFIXES) {
             //common variable
             val prefix = currentToken.text
-            forwardToNext(eol = false)
+            if (lookahead(1) is Space) {
+                next()
+            }
+            next() mustBe Type.WORD
             prefix + " " + currentToken.text
         } else {
             //proper variable
             var temp = currentToken.text
             while (true) {
-                if (lookahead(1) is Token.Space) {
+                if (lookahead(1) is Space) {
                     next()
                 }
-                if (lookahead(1).let { it !is Token.Word || it in PROPER_VARIABLE_TERMINATORS }) {
+                if (lookahead(1).let { it !is Word || it in PROPER_VARIABLE_TERMINATORS }) {
                     break
                 }
                 next()

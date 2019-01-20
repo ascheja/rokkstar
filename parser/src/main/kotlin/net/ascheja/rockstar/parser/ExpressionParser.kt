@@ -129,7 +129,7 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
 
     private fun parseNumberExpression(): Expression {
         var tmp = ""
-        while (currentToken.text.matches(NUMERIC_CHECK) || (currentToken == Garbage('.') && !tmp.contains('.'))) {
+        while (currentToken.text.matches(NUMERIC_CHECK) || (currentToken == Garbage('.') && ('.' !in tmp))) {
             tmp += currentToken.text
             next()
         }
