@@ -5,7 +5,7 @@ import net.ascheja.rockstar.ast.expressions.*
 import net.ascheja.rockstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import net.ascheja.rockstar.parser.Token.*
 
-class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space} + listOf(Eof())) {
+class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space} + Eof()) {
 
     companion object {
         val AMPERSAND = Garbage('&')
