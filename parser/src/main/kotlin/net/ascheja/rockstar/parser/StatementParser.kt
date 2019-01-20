@@ -121,7 +121,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         while (currentToken !in setOf(Eol(), Eof())) {
             next()
         }
-        return ReturnStatement(ExpressionParser(tokens.subList(start, index)).parseExpression())
+        return ReturnStatement(parseExpression(tokens.subList(start, index)))
     }
 
     private fun parseIncrement(): IncrementStatement {
@@ -190,7 +190,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         while (currentToken !in setOf(Eol(), Eol())) {
             next()
         }
-        val condition = ExpressionParser(tokens.subList(start, index)).parseExpression()
+        val condition = parseExpression(tokens.subList(start, index))
         next()
         val thenBlock = parseBlockStatement()
         val elseBlock = if (currentToken == KW_ELSE) {
@@ -211,7 +211,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         while (currentToken !is Eol && currentToken !is Eof) {
             next()
         }
-        val condition = ExpressionParser(tokens.subList(start, index)).parseExpression()
+        val condition = parseExpression(tokens.subList(start, index))
         next()
         return WhileLoopStatement(condition, parseBlockStatement())
     }
@@ -225,7 +225,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         while (currentToken !is Eol && currentToken !is Eof) {
             next()
         }
-        val condition = ExpressionParser(tokens.subList(start, index)).parseExpression()
+        val condition = parseExpression(tokens.subList(start, index))
         next()
         return UntilLoopStatement(condition, parseBlockStatement())
     }
@@ -276,7 +276,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         while (currentToken !is Eol && currentToken !is Eof) {
             next()
         }
-        return PrintLineStatement(ExpressionParser(tokens.subList(start, index)).parseExpression())
+        return PrintLineStatement(parseExpression(tokens.subList(start, index)))
     }
 
     private fun parsePutInto(): AssignmentStatement {
@@ -294,7 +294,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         next()
         currentToken mustBe Space()
         next()
-        val expression = ExpressionParser(tokens.subList(start, index)).parseExpression()
+        val expression = parseExpression(tokens.subList(start, index))
         return AssignmentStatement(parseIdentifier(), expression)
     }
 
@@ -345,5 +345,11 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             }
         }
         return argumentTokens
+    }
+
+    private fun parseExpression(tokens: List<Token>): Expression {
+        val parser = ExpressionParser(tokens)
+        parser.lastName = lastName
+        return parser.parseExpression().also { lastName = parser.lastName }
     }
 }

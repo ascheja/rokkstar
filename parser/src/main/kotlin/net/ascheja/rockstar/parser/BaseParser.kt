@@ -11,7 +11,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         }
     }
 
-    private var lastName: String? = null
+    internal var lastName: String? = null
 
     companion object {
         val PRONOUNS = setOf(
