@@ -194,7 +194,10 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
 
     private fun parseBlockStatement(): BlockStatement {
         val statements = mutableListOf<Statement>()
-        while (index < tokens.size) {
+        if (currentToken == Eof()) {
+            throw UnexpectedTokenException("Found Eof at start of a block")
+        }
+        while (currentToken != Eof()) {
             if (currentToken == KW_ELSE) {
                 break
             }
@@ -281,7 +284,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
     private fun extractParameters(): List<List<Token>> {
         val argumentTokens: MutableList<List<Token>> = mutableListOf()
         var start = index
-        while (index < tokens.size) {
+        while (currentToken != Eof()) {
             if (currentToken in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol())) {
                 argumentTokens.add(tokens.subList(start, index))
                 if (currentToken == COMMA && lookahead(1) == KW_AND) {
