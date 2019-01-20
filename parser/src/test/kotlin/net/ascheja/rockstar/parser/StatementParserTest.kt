@@ -34,10 +34,18 @@ class StatementParserTest {
     }
 
     @Test
-    fun `Poetic string literal parsed correctly`() {
+    fun `Poetic string literal assignment parsed correctly`() {
         assertEquals(
             AssignmentStatement(Identifier("Your heart"), StringLiteralExpression(";!bla bla???<>")),
             createParser("Your heart says ;!bla bla???<>").parseStatement()
+        )
+    }
+
+    @Test
+    fun `Poetic number literal assignment parsed correctly`() {
+        assertEquals(
+            AssignmentStatement(Identifier("Tommy"), NumberLiteralExpression(14487.0)),
+            createParser("Tommy was a lean, mean wrecking machine.").parseStatement()
         )
     }
 
