@@ -11,63 +11,16 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
         return parseLogicalExpression()
     }
 
-    private fun parsePrimaryExpression(): Expression {
-        return when (currentToken) {
-            is StringLiteral -> StringLiteralExpression(currentToken.text)
-            KW_MYSTERIOUS -> UndefinedLiteralExpression()
-            in NULL_ALIASES -> NullLiteralExpression()
-            in TRUE_ALIASES -> BooleanLiteralExpression(true)
-            in FALSE_ALIASES -> BooleanLiteralExpression(true)
-            else -> {
-                if (currentToken.text.matches(NUMERIC_CHECK)) {
-                    parseNumberExpression()
-                } else {
-                    VariableExpression(parseIdentifier())
-                }
-
+    private fun parseLogicalExpression(): Expression {
+        var left = parseComparisonExpression()
+        while (currentToken in setOf(KW_AND, KW_OR, KW_NOR)) {
+            val operator = when (currentToken) {
+                KW_AND -> AND
+                KW_OR -> OR
+                else -> NOR
             }
-        }.also {
-            if (it !is VariableExpression && it !is NumberLiteralExpression) {
-                next()
-            }
-        }
-    }
-
-    private fun parseFunctionCallExpression(): Expression {
-        val left = parsePrimaryExpression()
-        if (left !is VariableExpression || currentToken != KW_TAKING) {
-            return left
-        }
-        val functionName = left.identifier
-        next()
-        return FunctionCallExpression(functionName, extractArguments().map { ExpressionParser(it).parseExpression() })
-    }
-
-    private fun parseUnaryExpression(): Expression {
-        var expr = parseFunctionCallExpression()
-        while (currentToken == KW_NOT) {
             next()
-            expr = UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, expr)
-        }
-        return expr
-    }
-
-    private fun parseMultiplicationDivisionExpression(): Expression {
-        var left = parseUnaryExpression()
-        while (currentToken in setOf(KW_TIMES, KW_OF, KW_OVER)) {
-            val operator = if (currentToken == KW_OVER) DIVIDE else MULTIPLY
-            next()
-            left = BinaryOperatorExpression(operator, left, parseUnaryExpression())
-        }
-        return left
-    }
-
-    private fun parseAdditionSubtractionExpression(): Expression {
-        var left = parseMultiplicationDivisionExpression()
-        while (currentToken in setOf(KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT)) {
-            val operator = if (currentToken == KW_MINUS || currentToken == KW_WITHOUT) SUBTRACT else ADD
-            next()
-            left = BinaryOperatorExpression(operator, left, parseMultiplicationDivisionExpression())
+            left = BinaryOperatorExpression(operator, left, parseComparisonExpression())
         }
         return left
     }
@@ -107,18 +60,65 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
         return left
     }
 
-    private fun parseLogicalExpression(): Expression {
-        var left = parseComparisonExpression()
-        while (currentToken in setOf(KW_AND, KW_OR, KW_NOR)) {
-            val operator = when (currentToken) {
-                KW_AND -> AND
-                KW_OR -> OR
-                else -> NOR
-            }
+    private fun parseAdditionSubtractionExpression(): Expression {
+        var left = parseMultiplicationDivisionExpression()
+        while (currentToken in setOf(KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT)) {
+            val operator = if (currentToken == KW_MINUS || currentToken == KW_WITHOUT) SUBTRACT else ADD
             next()
-            left = BinaryOperatorExpression(operator, left, parseComparisonExpression())
+            left = BinaryOperatorExpression(operator, left, parseMultiplicationDivisionExpression())
         }
         return left
+    }
+
+    private fun parseMultiplicationDivisionExpression(): Expression {
+        var left = parseUnaryExpression()
+        while (currentToken in setOf(KW_TIMES, KW_OF, KW_OVER)) {
+            val operator = if (currentToken == KW_OVER) DIVIDE else MULTIPLY
+            next()
+            left = BinaryOperatorExpression(operator, left, parseUnaryExpression())
+        }
+        return left
+    }
+
+    private fun parseUnaryExpression(): Expression {
+        var expr = parseFunctionCallExpression()
+        while (currentToken == KW_NOT) {
+            next()
+            expr = UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, expr)
+        }
+        return expr
+    }
+
+    private fun parseFunctionCallExpression(): Expression {
+        val left = parsePrimaryExpression()
+        if (left !is VariableExpression || currentToken != KW_TAKING) {
+            return left
+        }
+        val functionName = left.identifier
+        next()
+        return FunctionCallExpression(functionName, extractArguments().map { ExpressionParser(it).parseExpression() })
+    }
+
+    private fun parsePrimaryExpression(): Expression {
+        return when (currentToken) {
+            is StringLiteral -> StringLiteralExpression(currentToken.text)
+            KW_MYSTERIOUS -> UndefinedLiteralExpression()
+            in NULL_ALIASES -> NullLiteralExpression()
+            in TRUE_ALIASES -> BooleanLiteralExpression(true)
+            in FALSE_ALIASES -> BooleanLiteralExpression(true)
+            else -> {
+                if (currentToken.text.matches(NUMERIC_CHECK)) {
+                    parseNumberExpression()
+                } else {
+                    VariableExpression(parseIdentifier())
+                }
+
+            }
+        }.also {
+            if (it !is VariableExpression && it !is NumberLiteralExpression) {
+                next()
+            }
+        }
     }
 
     private fun parseNumberExpression(): Expression {
