@@ -68,12 +68,20 @@ class StatementParserTest {
     }
 
     @Test
-    fun `While,Until statements parsed correctly`() {
-        val expected = LoopStatement(
+    fun `While statements parsed correctly`() {
+        val expected = WhileLoopStatement(
             BooleanLiteralExpression(true),
             BlockStatement(listOf(PrintLineStatement(NullLiteralExpression())))
         )
         assertEquals(expected, createParser("While true\nSay nothing").parseStatement())
+    }
+
+    @Test
+    fun `Until statements parsed correctly`() {
+        val expected = UntilLoopStatement(
+            BooleanLiteralExpression(true),
+            BlockStatement(listOf(PrintLineStatement(NullLiteralExpression())))
+        )
         assertEquals(expected, createParser("Until true\nSay nothing").parseStatement())
     }
 

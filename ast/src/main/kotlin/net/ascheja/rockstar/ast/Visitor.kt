@@ -15,7 +15,8 @@ interface Visitor<T> {
         is IfStatement -> visitIfStatement(statement)
         is IncrementStatement -> visitIncrementStatement(statement)
         is DecrementStatement -> visitDecrementStatement(statement)
-        is LoopStatement -> visitLoopStatement(statement)
+        is WhileLoopStatement -> visitWhileLoopStatement(statement)
+        is UntilLoopStatement -> visitUntilLoopStatement(statement)
         is PrintLineStatement -> visitPrintLineStatement(statement)
         is ReadLineStatement -> visitReadLineStatement(statement)
         is ReturnStatement -> visitReturnStatement(statement)
@@ -39,7 +40,9 @@ interface Visitor<T> {
 
     fun visitDecrementStatement(decrementStatement: DecrementStatement): T
 
-    fun visitLoopStatement(loopStatement: LoopStatement): T
+    fun visitWhileLoopStatement(whileLoopStatement: WhileLoopStatement): T
+
+    fun visitUntilLoopStatement(untilLoopStatement: UntilLoopStatement): T
 
     fun visitPrintLineStatement(printLineStatement: PrintLineStatement): T
 

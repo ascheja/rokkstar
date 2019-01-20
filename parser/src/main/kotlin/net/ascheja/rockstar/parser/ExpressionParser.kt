@@ -10,6 +10,7 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
     companion object {
         val AMPERSAND = Garbage('&')
         val COMMA = Garbage(',')
+        val NUMERIC_CHECK = Regex("[0-9]+")
     }
 
     fun parseExpression(): Expression {
@@ -23,20 +24,27 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
             in NULL_ALIASES -> NullLiteralExpression()
             in TRUE_ALIASES -> BooleanLiteralExpression(true)
             in FALSE_ALIASES -> BooleanLiteralExpression(true)
-            else -> VariableExpression(parseIdentifier())
+            else -> {
+                if (currentToken.text.matches(NUMERIC_CHECK)) {
+                    parseNumberExpression()
+                } else {
+                    VariableExpression(parseIdentifier())
+                }
+
+            }
         }.also {
-            if (it !is VariableExpression) {
+            if (it !is VariableExpression && it !is NumberLiteralExpression) {
                 next()
             }
         }
     }
 
     private fun parseFunctionCallExpression(): Expression {
-        if (KW_TAKING !in tokens) {
-            return parsePrimaryExpression()
+        val left = parsePrimaryExpression()
+        if (left !is VariableExpression || currentToken != KW_TAKING) {
+            return left
         }
-        val functionName = parseIdentifier()
-        currentToken mustBe Word("taking")
+        val functionName = left.identifier
         next()
         return FunctionCallExpression(functionName, extractArguments().map { ExpressionParser(it).parseExpression() })
     }
@@ -63,7 +71,7 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
     private fun parseAdditionSubtractionExpression(): Expression {
         var left = parseMultiplicationDivisionExpression()
         while (currentToken in setOf(KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT)) {
-            val operator = if (currentToken == KW_MINUS || currentToken == KW_WITHOUT) ADD else SUBTRACT
+            val operator = if (currentToken == KW_MINUS || currentToken == KW_WITHOUT) SUBTRACT else ADD
             next()
             left = BinaryOperatorExpression(operator, left, parseMultiplicationDivisionExpression())
         }
@@ -120,14 +128,12 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
     }
 
     private fun parseNumberExpression(): Expression {
-        var text = ""
-        while (currentToken !is Eof) {
-            if (currentToken is Word && currentToken.text.matches(Regex("[0-9]+"))) {
-                text += currentToken.text
-            }
+        var tmp = ""
+        while (currentToken.text.matches(NUMERIC_CHECK) || (currentToken == Garbage('.') && !tmp.contains('.'))) {
+            tmp += currentToken.text
             next()
         }
-        return NumberLiteralExpression(text.toDouble())
+        return NumberLiteralExpression(tmp.toDouble())
     }
 
     private fun extractArguments(): List<List<Token>> {
@@ -141,6 +147,9 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
                 }
                 next()
                 start = index
+            } else if (currentToken in PROPER_VARIABLE_TERMINATORS) {
+                argumentTokens.add(tokens.subList(start, index))
+                break
             } else {
                 next()
             }

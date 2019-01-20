@@ -88,8 +88,9 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         val LESS_EQUAL_ALIASES = setOf("low", "little", "small", "weak").map { Word(it) }
 
         val PROPER_VARIABLE_TERMINATORS = setOf(
-            Eol(), Eof(), KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT,
-            Garbage(','), Garbage('&'), KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE
+            Eol(), Eof(), KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT, KW_TAKES, KW_TAKING,
+            Garbage(','), Garbage('&'), KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE,
+            KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT, KW_TIMES, KW_OF, KW_OVER
         )
     }
 
@@ -148,7 +149,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         }
     }
 
-    infix fun Token.mustBe(expectation: Token.Type): Token = mustBe {
+    private infix fun Token.mustBe(expectation: Token.Type): Token = mustBe {
         if (type != expectation) {
             throw UnexpectedTokenException("expected token to be of type $expectation, got $type")
         }
@@ -162,7 +163,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
             }
         }
         if (!found) {
-            throw UnexpectedTokenException("expected either of $tokens, got $it")
+            throw UnexpectedTokenException("expected either of ${tokens.toList()}, got $it")
         }
     }
 

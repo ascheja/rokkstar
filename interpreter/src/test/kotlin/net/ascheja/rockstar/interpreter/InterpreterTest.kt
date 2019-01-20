@@ -135,12 +135,12 @@ class InterpreterTest {
     }
 
     @Test
-    fun visitLoopStatement() {
+    fun visitWhileLoopStatement() {
         val printBla = PrintLineStatement(StringLiteralExpression("bla"))
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             visitor.visitStatement(
-                LoopStatement(
+                WhileLoopStatement(
                     UndefinedLiteralExpression(),
                     BlockStatement(listOf(printBla))
                 )
@@ -152,9 +152,31 @@ class InterpreterTest {
             val variableName = Identifier("my var")
             this[variableName] = NumberValue(2.0)
             visitor.visitStatement(
-                LoopStatement(
+                WhileLoopStatement(
                     VariableExpression(variableName),
                     BlockStatement(listOf(DecrementStatement(variableName, 1), printBla))
+                )
+            )
+        }
+    }
+
+    @Test
+    fun visitUntilLoopStatement() {
+        val variable = Identifier("my var")
+        withContext("", createOutput { yield("bla"); yield("bla"); }) {
+            this[variable] = NumberValue(0.0)
+            val visitor = Interpreter(this)
+            visitor.visitStatement(
+                UntilLoopStatement(
+                    BinaryOperatorExpression(
+                        BinaryOperatorExpression.Operator.EQUALS,
+                        VariableExpression(variable),
+                        NumberLiteralExpression(2.0)
+                    ),
+                    BlockStatement(listOf(
+                        IncrementStatement(variable, 1),
+                        PrintLineStatement(StringLiteralExpression("bla"))
+                    ))
                 )
             )
         }

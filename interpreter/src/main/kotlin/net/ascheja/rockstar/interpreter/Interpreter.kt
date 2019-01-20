@@ -20,7 +20,8 @@ class Interpreter(private val context: Context): Visitor<Action> {
         is IfStatement -> visitIfStatement(statement)
         is IncrementStatement -> visitIncrementStatement(statement)
         is DecrementStatement -> visitDecrementStatement(statement)
-        is LoopStatement -> visitLoopStatement(statement)
+        is WhileLoopStatement -> visitWhileLoopStatement(statement)
+        is UntilLoopStatement -> visitUntilLoopStatement(statement)
         is PrintLineStatement -> visitPrintLineStatement(statement)
         is ReadLineStatement -> visitReadLineStatement(statement)
         is ReturnStatement -> visitReturnStatement(statement)
@@ -88,9 +89,23 @@ class Interpreter(private val context: Context): Visitor<Action> {
         return Action.Proceed()
     }
 
-    override fun visitLoopStatement(loopStatement: LoopStatement): Action {
-        loop@ while (visitExpression(loopStatement.condition).value.toBoolean()) {
-            when (val action = visitBlockStatement(loopStatement.body)) {
+    override fun visitWhileLoopStatement(whileLoopStatement: WhileLoopStatement): Action {
+        loop@ while (visitExpression(whileLoopStatement.condition).value.toBoolean()) {
+            when (val action = visitBlockStatement(whileLoopStatement.body)) {
+                is Action.Break -> break@loop
+                is Action.Continue -> continue@loop
+                is Action.Return -> return action
+            }
+        }
+        return Action.Proceed()
+    }
+
+    override fun visitUntilLoopStatement(untilLoopStatement: UntilLoopStatement): Action {
+        loop@ while (true) {
+            if (visitExpression(untilLoopStatement.condition).value.toBoolean()) {
+                break@loop
+            }
+            when (val action = visitBlockStatement(untilLoopStatement.body)) {
                 is Action.Break -> break@loop
                 is Action.Continue -> continue@loop
                 is Action.Return -> return action
