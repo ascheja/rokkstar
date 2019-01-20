@@ -91,7 +91,9 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
     private fun parseFunctionDeclaration(identifier: Identifier): FunctionDeclaration {
         currentToken mustBe KW_TAKES
         next()
-        val parameters = extractParameters().map { Identifier(it.joinToString("") {it.text.trim()}) }
+        val parameters = extractParameters().map {
+            Identifier(it.joinToString("") {token -> token.text.trim()})
+        }
         next() mustBe Eol()
         return FunctionDeclaration(identifier, parameters, parseBlockStatement())
     }
