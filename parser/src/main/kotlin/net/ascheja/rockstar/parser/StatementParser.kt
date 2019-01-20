@@ -37,14 +37,18 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
                 when (currentToken) {
                     KW_IS, KW_WAS, KW_WERE -> parseLiteralAssignment(identifier)
                     KW_TAKES -> parseFunctionDeclaration(identifier)
-                    KW_SAYS -> parseLiteralStringAssignment(identifier)
+                    KW_SAYS -> parsePoeticStringLiteralAssignment(identifier)
                     else -> throw UnexpectedTokenException(currentToken.text)
                 }
             }
         }
     }
 
-    private fun parseLiteralStringAssignment(identifier: Identifier): AssignmentStatement {
+    private fun parsePoeticStringLiteralAssignment(identifier: Identifier): AssignmentStatement {
+        currentToken mustBe KW_SAYS
+        next()
+        currentToken mustBe Space()
+        next()
         val allUntilEol = mutableListOf<String>()
         while (currentToken !in setOf(Eol(), Eof())) {
             allUntilEol.add(currentToken.text)

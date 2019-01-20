@@ -34,6 +34,14 @@ class StatementParserTest {
     }
 
     @Test
+    fun `Poetic string literal parsed correctly`() {
+        assertEquals(
+            AssignmentStatement(Identifier("Your heart"), StringLiteralExpression(";!bla bla???<>")),
+            createParser("Your heart says ;!bla bla???<>").parseStatement()
+        )
+    }
+
+    @Test
     fun `If without else parsed correctly`() {
         val identifier = Identifier("my name")
         assertEquals(
