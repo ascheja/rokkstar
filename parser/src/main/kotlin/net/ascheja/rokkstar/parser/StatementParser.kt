@@ -58,7 +58,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             else -> {
                 val numberAsString = if (currentToken.text.matches(NUMERIC_CHECK)) {
                     var tmp = ""
-                    while (currentToken !in setOf(Eol(), Eof())) {
+                    while (currentToken !in setOf(Eol, Eof())) {
                         if (currentToken == Garbage('.') && !tmp.contains('.')) {
                             tmp += "."
                         }
@@ -70,7 +70,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
                     tmp
                 } else {
                     var tmp = ""
-                    while (currentToken !in setOf(Eol(), Eof())) {
+                    while (currentToken !in setOf(Eol, Eof())) {
                         if (currentToken == Garbage('.') && !tmp.contains('.')) {
                             tmp += "."
                         }
@@ -84,7 +84,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
                 NumberLiteralExpression(numberAsString.trimEnd('.').toDouble())
             }
         }
-        currentToken mustBe any(Eol(), Eof())
+        currentToken mustBe any(Eol, Eof())
         return AssignmentStatement(identifier, value)
     }
 
@@ -167,7 +167,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
         val thenBlock = parseBlockStatement()
         val elseBlock = if (currentToken == KW_ELSE) {
             next()
-            currentToken mustBe Eol()
+            currentToken mustBe Eol
             next()
             parseBlockStatement()
         } else null
@@ -208,7 +208,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
                 break
             }
             statements.add(parseStatement())
-            currentToken mustBe any(Eof(), Eol())
+            currentToken mustBe any(Eof(), Eol)
             next()
             while (currentToken is Space) {
                 next()
@@ -266,11 +266,11 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             && lookahead(6) == KW_THE
             && lookahead(7) == Space()
             && lookahead(8) == KW_TOP
-            && lookahead(9) in setOf(Eol(), Eof())
+            && lookahead(9) in setOf(Eol, Eof())
     }
 
     private fun matchBreak(): Boolean {
-        if (currentToken == KW_BREAK && lookahead(1) in setOf(Eol(), Eof())) {
+        if (currentToken == KW_BREAK && lookahead(1) in setOf(Eol, Eof())) {
             return true
         }
         return currentToken == KW_BREAK
@@ -278,19 +278,19 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             && lookahead(2) == KW_IT
             && lookahead(3) == Space()
             && lookahead(4) == KW_DOWN
-            && lookahead(5) in setOf(Eol(), Eof())
+            && lookahead(5) in setOf(Eol, Eof())
     }
 
     private fun extractParameters(): List<List<Token>> {
         val argumentTokens: MutableList<List<Token>> = mutableListOf()
         var start = index
         while (currentToken != Eof()) {
-            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol())) {
+            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol)) {
                 argumentTokens.add(tokens.subList(start, index))
                 if (currentToken == COMMA && lookahead(1) == KW_AND) {
                     next()
                 }
-                if (currentToken == Eol()) {
+                if (currentToken == Eol) {
                     break
                 }
                 next()

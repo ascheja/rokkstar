@@ -71,7 +71,7 @@ class LexerTest {
                 Space(),
                 Word("machine"),
                 Garbage('.'),
-                Eol(),
+                Eol,
                 Word("Knock"),
                 Space(),
                 Word("Tommy"),

@@ -30,7 +30,7 @@ class Lexer(private val input: CharSequence) {
                 }
                 char == '\n' -> {
                     yieldAll(clearBuffer())
-                    yield(Eol())
+                    yield(Eol)
                 }
                 char in WHITESPACE -> {
                     yieldAll(clearBuffer())

@@ -14,8 +14,8 @@ sealed class Token(val type: Type, val text: String) {
         override fun toString(): String = "GARBAGE(\"$text\")"
     }
 
-    class Eol: Token(Type.EOL, "\n") {
-        override fun toString(): String = "EOL()"
+    object Eol: Token(Type.EOL, "\n") {
+        override fun toString(): String = "EOL"
     }
 
     class Eof: Token(Type.EOF, "") {
