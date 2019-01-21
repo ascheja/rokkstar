@@ -101,5 +101,31 @@ class StatementParserTest {
         assertEquals(expected, createParser("Until true\nSay nothing").parseStatement())
     }
 
+    @Test
+    fun `function call parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("Large"),
+            FunctionCallExpression(
+                Identifier("Multiply"),
+                listOf(
+                    NumberLiteralExpression(3.0),
+                    NumberLiteralExpression(5.0),
+                    NumberLiteralExpression(9.0)
+                )
+            )
+        )
+        assertEquals(expected, createParser("Put Multiply taking 3, 5, and 9 into Large").parseStatement())
+    }
+
+    @Test
+    fun `function declaration is parsed correctly`() {
+        val expected = FunctionDeclaration(
+            Identifier("Search"),
+            listOf(Identifier("Needle"), Identifier("Haystack")),
+            BlockStatement(listOf(ReturnStatement(VariableExpression(Identifier("Needle")))))
+        )
+        assertEquals(expected, createParser("Search takes Needle and Haystack\nGive back Needle").parseStatement())
+    }
+
     private fun createParser(text: String): StatementParser = StatementParser(Lexer(text).tokens)
 }
