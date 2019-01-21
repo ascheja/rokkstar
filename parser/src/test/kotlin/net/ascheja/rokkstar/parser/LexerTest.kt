@@ -7,13 +7,13 @@ import org.junit.Test
 class LexerTest {
 
     @Test
-    fun `"'s +" is expanded to Space() Word("is") Space()`() {
+    fun `"'s +" is expanded to Space Word("is") Space`() {
         assertEquals(
             listOf(
                 Word("Tommy"),
-                Space(),
+                Space,
                 Word("is"),
-                Space(),
+                Space,
                 Word("mean")
             ),
             tokenize("Tommy's \tmean")
@@ -35,17 +35,17 @@ class LexerTest {
         assertEquals(
             listOf(
                 Word("Tommy"),
-                Space(),
+                Space,
                 Word("was"),
-                Space(),
+                Space,
                 Word("a"),
-                Space(),
+                Space,
                 Word("lean"),
-                Space(),
+                Space,
                 Word("mean"),
-                Space(),
+                Space,
                 Word("wrecking"),
-                Space(),
+                Space,
                 Word("machine"),
                 Garbage('.')
             ),
@@ -58,30 +58,30 @@ class LexerTest {
         assertEquals(
             listOf(
                 Word("Tommy"),
-                Space(),
+                Space,
                 Word("was"),
-                Space(),
+                Space,
                 Word("a"),
-                Space(),
+                Space,
                 Word("lean"),
-                Space(),
+                Space,
                 Word("mean"),
-                Space(),
+                Space,
                 Word("wrecking"),
-                Space(),
+                Space,
                 Word("machine"),
                 Garbage('.'),
                 Eol,
                 Word("Knock"),
-                Space(),
+                Space,
                 Word("Tommy"),
-                Space(),
+                Space,
                 Word("up"),
                 Garbage(','),
-                Space(),
+                Space,
                 Word("up"),
                 Garbage(','),
-                Space(),
+                Space,
                 Word("up"),
                 Garbage('.')
             ),
@@ -94,21 +94,21 @@ class LexerTest {
         assertEquals(
             listOf(
                 Word("Tommy"),
-                Space(),
+                Space,
                 Word("was"),
-                Space(),
+                Space,
                 Word("a"),
-                Space(),
+                Space,
                 Word("lean"),
-                Space(),
+                Space,
                 Word("mean"),
-                Space(),
+                Space,
                 Word("wrecking"),
-                Space(),
+                Space,
                 Word("machine"),
                 Garbage('.'),
-                Space(),
-                Space(),
+                Space,
+                Space,
                 Comment("initialises Tommy with the value 14487")
             ),
             tokenize("Tommy was a lean mean wrecking machine.  (initialises Tommy with the value 14487)")
@@ -120,13 +120,13 @@ class LexerTest {
         assertEquals(
             listOf(
                 Word("Put"),
-                Space(),
+                Space,
                 StringLiteral("Hello San Francisco"),
-                Space(),
+                Space,
                 Word("into"),
-                Space(),
+                Space,
                 Word("the"),
-                Space(),
+                Space,
                 Word("message")
             ),
             tokenize("Put \"Hello San Francisco\" into the message")

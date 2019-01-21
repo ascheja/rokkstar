@@ -34,7 +34,7 @@ class Lexer(private val input: CharSequence) {
                 }
                 char in WHITESPACE -> {
                     yieldAll(clearBuffer())
-                    yield(Space())
+                    yield(Space)
                 }
                 char.isLetterOrDigit() -> {
                     buffer += char
@@ -46,7 +46,7 @@ class Lexer(private val input: CharSequence) {
                         if (maybeS == 's' && maybeWhitespace in WHITESPACE) {
                             index += 2
                             yieldAll(clearBuffer())
-                            yield(Space())
+                            yield(Space)
                             yield(Word("is"))
                         }
                     }

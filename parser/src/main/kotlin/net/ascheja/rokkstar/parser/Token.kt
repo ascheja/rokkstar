@@ -6,8 +6,8 @@ sealed class Token(val type: Type, val text: String) {
         override fun toString(): String = "WORD(\"$text\")"
     }
 
-    class Space: Token(Type.SPACE, " ") {
-        override fun toString(): String = "SPACE()"
+    object Space: Token(Type.SPACE, " ") {
+        override fun toString(): String = "SPACE"
     }
 
     class Garbage(char: Char): Token(Type.GARBAGE, char.toString()) {
