@@ -18,8 +18,8 @@ sealed class Token(val type: Type, val text: String) {
         override fun toString(): String = "EOL"
     }
 
-    class Eof: Token(Type.EOF, "") {
-        override fun toString(): String = "EOF()"
+    object Eof: Token(Type.EOF, "") {
+        override fun toString(): String = "EOF"
     }
 
     class StringLiteral(text: String): Token(Type.STRING_LITERAL, text) {

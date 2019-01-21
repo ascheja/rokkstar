@@ -133,7 +133,7 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
     private fun extractArguments(): List<List<Token>> {
         val argumentTokens: MutableList<List<Token>> = mutableListOf()
         var start = index
-        while (currentToken != Eof()) {
+        while (currentToken != Eof) {
             if (currentToken in setOf(AMPERSAND, COMMA, Word("n"))) {
                 argumentTokens.add(tokens.subList(start, index))
                 if (currentToken == COMMA && lookahead(1) == KW_AND) {

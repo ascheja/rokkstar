@@ -88,7 +88,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         val LESS_EQUAL_ALIASES = setOf("low", "little", "small", "weak").map { Word(it) }
 
         val PROPER_VARIABLE_TERMINATORS = setOf(
-            Eol, Eof(), KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT, KW_TAKES, KW_TAKING,
+            Eol, Eof, KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT, KW_TAKES, KW_TAKING,
             Garbage(','), Garbage('&'), KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE,
             KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT, KW_TIMES, KW_OF, KW_OVER
         )
@@ -101,7 +101,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         private set
 
     protected val currentToken: Token
-        get() = if (index != tokens.size) tokens[index] else Eof()
+        get() = if (index != tokens.size) tokens[index] else Eof
 
     protected fun next(): Token {
         if (index < tokens.size) {
@@ -112,7 +112,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
 
     protected fun skipToNextEolOrEof(): List<Token> {
         val skipped = mutableListOf<Token>()
-        while (currentToken !in setOf(Eol, Eof())) {
+        while (currentToken !in setOf(Eol, Eof)) {
             skipped.add(currentToken)
             next()
         }
@@ -131,7 +131,7 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
     protected fun lookahead(n: Int): Token = if (index + n < tokens.size) {
         if (index + n >= 0) tokens[index + n] else tokens.first()
     } else {
-        Eof()
+        Eof
     }
 
     infix fun Token.mustBe(expectation: (Token) -> Unit): Token {
