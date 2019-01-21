@@ -59,7 +59,6 @@ class Lexer(private val input: CharSequence) {
             index++
         }
         yieldAll(clearBuffer())
-        yield(Eof())
     }
 
     private fun finalizeBlock(until: Char, tokenGenerator: (String) -> Token) = sequence {

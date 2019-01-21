@@ -14,8 +14,7 @@ class LexerTest {
                 Space(),
                 Word("is"),
                 Space(),
-                Word("mean"),
-                Eof()
+                Word("mean")
             ),
             tokenize("Tommy's \tmean")
         )
@@ -25,8 +24,7 @@ class LexerTest {
     fun `"'" is just ignored everywhere else`() {
         assertEquals(
             listOf(
-                Word("RocknRoll"),
-                Eof()
+                Word("RocknRoll")
             ),
             tokenize("Rock'n'Roll")
         )
@@ -49,8 +47,7 @@ class LexerTest {
                 Word("wrecking"),
                 Space(),
                 Word("machine"),
-                Garbage('.'),
-                Eof()
+                Garbage('.')
             ),
             tokenize("Tommy was a lean mean wrecking machine.")
         )
@@ -86,8 +83,7 @@ class LexerTest {
                 Garbage(','),
                 Space(),
                 Word("up"),
-                Garbage('.'),
-                Eof()
+                Garbage('.')
             ),
             tokenize("Tommy was a lean mean wrecking machine.\nKnock Tommy up, up, up.")
         )
@@ -113,8 +109,7 @@ class LexerTest {
                 Garbage('.'),
                 Space(),
                 Space(),
-                Comment("initialises Tommy with the value 14487"),
-                Eof()
+                Comment("initialises Tommy with the value 14487")
             ),
             tokenize("Tommy was a lean mean wrecking machine.  (initialises Tommy with the value 14487)")
         )
@@ -132,8 +127,7 @@ class LexerTest {
                 Space(),
                 Word("the"),
                 Space(),
-                Word("message"),
-                Eof()
+                Word("message")
             ),
             tokenize("Put \"Hello San Francisco\" into the message")
         )

@@ -5,7 +5,7 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import net.ascheja.rokkstar.parser.Token.*
 
-class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space} + Eof()) {
+class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space}) {
 
     fun parseExpression(): Expression {
         return parseLogicalExpression()
