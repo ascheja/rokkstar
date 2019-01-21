@@ -101,6 +101,5 @@ class StatementParserTest {
         assertEquals(expected, createParser("Until true\nSay nothing").parseStatement())
     }
 
-    private fun createParser(text: String): StatementParser = StatementParser(Lexer(text).tokens
-    )
+    private fun createParser(text: String): StatementParser = StatementParser(Lexer(text).tokens)
 }
