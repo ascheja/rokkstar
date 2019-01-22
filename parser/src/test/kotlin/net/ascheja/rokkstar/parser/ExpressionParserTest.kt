@@ -4,6 +4,7 @@ import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Test
 
 class ExpressionParserTest {
@@ -284,6 +285,17 @@ class ExpressionParserTest {
             createParser("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and Happiness")
                 .parseExpression()
         )
+    }
+
+    @Test
+    fun `function call with dangling separator is an error`() {
+        try {
+            createParser("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and")
+                .parseExpression()
+            fail()
+        } catch (e: ParserException) {
+            assertEquals("Dangling separator", e.message)
+        }
     }
 
     private fun createParser(text: String): ExpressionParser = ExpressionParser(Lexer(text).tokens)
