@@ -26,7 +26,7 @@ class TokenSource(private val tokens: List<Token>): Iterable<Token> by tokens {
                 return false
             }
         }
-        return true.also { index += match.size - 1 }
+        return true.also { index += match.size }
     }
 
     fun skipToNextEolOrEof(): TokenSource {

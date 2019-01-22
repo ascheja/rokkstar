@@ -103,7 +103,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
     }
 
     private fun parseReturn(source: TokenSource): ReturnStatement {
-        source.next() mustBe Space
+        source.current mustBe Space
         return ReturnStatement(parseExpression(source.skipToNextEolOrEof()))
     }
 
@@ -220,7 +220,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
     }
 
     private fun parseListenTo(source: TokenSource): ReadLineStatement {
-        source.next() mustBe Space
+        source.current mustBe Space
         source.next()
         return ReadLineStatement(parseIdentifier(source))
     }
