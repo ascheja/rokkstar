@@ -17,7 +17,7 @@ Using the runner
 # starts the api on port 8080
 ./gradlew :runner:run --args='api 8080'
 
-# transpiles the given rockstar source code file to javascript
+# transpiles the given rockstar source code file to javascript (without type conversions)
 ./gradlew :runner:run --args='transpile:js <file>'
 
 # launches the interpreter on the given file
@@ -27,7 +27,7 @@ Using the runner
 Plans for the future
 --------------------
 - [x] Add more tests, enable github-ci
-- [ ] Add position tracking for tokens
+- [x] Add position tracking for tokens
 - [ ] Improve error handling in Parser (try to recover from exceptions)
 - [ ] Rockstar plugin for IntelliJ IDEA
 - [ ] Provide a Dockerfile
