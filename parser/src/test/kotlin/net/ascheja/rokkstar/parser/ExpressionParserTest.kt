@@ -245,5 +245,17 @@ class ExpressionParserTest {
         )
     }
 
+    @Test
+    fun `not parsed correctly`() {
+        val expected = UnaryOperatorExpression(
+            UnaryOperatorExpression.Operator.NOT,
+            BooleanLiteralExpression(true)
+        )
+        assertEquals(
+            expected,
+            createParser("not true").parseExpression()
+        )
+    }
+
     private fun createParser(text: String): ExpressionParser = ExpressionParser(Lexer(text).tokens)
 }

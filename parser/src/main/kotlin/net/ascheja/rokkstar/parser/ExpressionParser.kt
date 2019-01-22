@@ -81,12 +81,11 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
     }
 
     private fun parseUnaryExpression(): Expression {
-        var expr = parseFunctionCallExpression()
         while (currentToken == KW_NOT) {
             next()
-            expr = UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, expr)
+            return UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, parseUnaryExpression())
         }
-        return expr
+        return parseFunctionCallExpression()
     }
 
     private fun parseFunctionCallExpression(): Expression {
