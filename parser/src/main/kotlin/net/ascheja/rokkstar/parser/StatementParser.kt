@@ -5,306 +5,306 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.statements.*
 import net.ascheja.rokkstar.parser.Token.*
 
-class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Comment}) {
+class StatementParser: BaseParser() {
 
-    fun parseProgram(): Program {
-        return Program(parseBlockStatement())
+    fun parseProgram(source: TokenSource): Program {
+        return Program(parseBlockStatement(source))
     }
 
-    fun parseStatement(): Statement {
+    fun parseStatement(source: TokenSource): Statement {
         return when {
-            currentToken == KW_ELSE -> throw UnexpectedTokenException("else without if")
-            currentToken == KW_LISTEN -> parseListenTo()
-            currentToken == KW_IF -> parseIf()
-            currentToken in setOf(KW_SAY, KW_SCREAM, KW_SHOUT, KW_WHISPER) -> parseSay()
-            currentToken == KW_PUT -> parsePutInto()
-            currentToken == KW_WHILE -> parseWhileLoop()
-            currentToken == KW_UNTIL -> parseUntilLoop()
-            matchContinue() -> parseContinue()
-            matchBreak() -> parseBreak()
-            currentToken == KW_BUILD -> parseIncrement()
-            currentToken == KW_KNOCK -> parseDecrement()
-            currentToken == KW_GIVE -> parseReturn()
+            source.current == KW_ELSE -> throw UnexpectedTokenException("else without if")
+            source.current == KW_LISTEN -> parseListenTo(source)
+            source.current == KW_IF -> parseIf(source)
+            source.current in setOf(KW_SAY, KW_SCREAM, KW_SHOUT, KW_WHISPER) -> parseSay(source)
+            source.current == KW_PUT -> parsePutInto(source)
+            source.current == KW_WHILE -> parseWhileLoop(source)
+            source.current == KW_UNTIL -> parseUntilLoop(source)
+            matchContinue(source) -> parseContinue(source)
+            matchBreak(source) -> parseBreak(source)
+            source.current == KW_BUILD -> parseIncrement(source)
+            source.current == KW_KNOCK -> parseDecrement(source)
+            source.current == KW_GIVE -> parseReturn(source)
             else -> {
-                val identifier = parseIdentifier()
-                skipToNextWordIfNecessary()
-                when (currentToken) {
-                    KW_IS, KW_WAS, KW_WERE -> parseLiteralAssignment(identifier)
-                    KW_TAKES -> parseFunctionDeclaration(identifier)
-                    KW_SAYS -> parsePoeticStringLiteralAssignment(identifier)
-                    else -> throw UnexpectedTokenException(currentToken.text)
+                val identifier = parseIdentifier(source)
+                source.skipToNextWordIfNecessary()
+                when (source.current) {
+                    KW_IS, KW_WAS, KW_WERE -> parseLiteralAssignment(identifier, source)
+                    KW_TAKES -> parseFunctionDeclaration(identifier, source)
+                    KW_SAYS -> parsePoeticStringLiteralAssignment(identifier, source)
+                    else -> throw UnexpectedTokenException(source.current.text)
                 }
             }
         }
     }
 
-    private fun parsePoeticStringLiteralAssignment(identifier: Identifier): AssignmentStatement {
-        currentToken mustBe KW_SAYS
-        next() mustBe Space
-        next()
-        return AssignmentStatement(identifier, StringLiteralExpression(skipToNextEolOrEof().joinToString("") { it.text}))
+    private fun parsePoeticStringLiteralAssignment(identifier: Identifier, source: TokenSource): AssignmentStatement {
+        source.current mustBe KW_SAYS
+        source.next() mustBe Space
+        source.next()
+        return AssignmentStatement(identifier, StringLiteralExpression(source.skipToNextEolOrEof().joinToString("") { it.text}))
     }
 
-    private fun parseLiteralAssignment(identifier: Identifier): Statement {
-        currentToken mustBe any(KW_IS, KW_WAS, KW_WERE)
-        next() mustBe Space
-        next()
-        val value = when (currentToken) {
-            is StringLiteral -> StringLiteralExpression(currentToken.text).also { next() }
-            KW_MYSTERIOUS -> UndefinedLiteralExpression().also { next() }
-            in NULL_ALIASES -> NullLiteralExpression().also { next() }
-            in TRUE_ALIASES -> BooleanLiteralExpression(true).also { next() }
-            in FALSE_ALIASES -> BooleanLiteralExpression(false).also { next() }
+    private fun parseLiteralAssignment(identifier: Identifier, source: TokenSource): Statement {
+        source.current mustBe any(KW_IS, KW_WAS, KW_WERE)
+        source.next() mustBe Space
+        source.next()
+        val value = when (source.current) {
+            is StringLiteral -> StringLiteralExpression(source.current.text).also { source.next() }
+            KW_MYSTERIOUS -> UndefinedLiteralExpression().also { source.next() }
+            in NULL_ALIASES -> NullLiteralExpression().also { source.next() }
+            in TRUE_ALIASES -> BooleanLiteralExpression(true).also { source.next() }
+            in FALSE_ALIASES -> BooleanLiteralExpression(false).also { source.next() }
             else -> {
-                val numberAsString = if (currentToken.text.matches(NUMERIC_CHECK)) {
+                val numberAsString = if (source.current.text.matches(NUMERIC_CHECK)) {
                     var tmp = ""
-                    while (currentToken !in setOf(Eol, Eof)) {
-                        if (currentToken == Garbage('.') && !tmp.contains('.')) {
+                    while (source.current !in setOf(Eol, Eof)) {
+                        if (source.current == Garbage('.') && !tmp.contains('.')) {
                             tmp += "."
                         }
-                        if (currentToken is Word && currentToken.text.matches(NUMERIC_CHECK)) {
-                            tmp += currentToken.text
+                        if (source.current is Word && source.current.text.matches(NUMERIC_CHECK)) {
+                            tmp += source.current.text
                         }
-                        next()
+                        source.next()
                     }
                     tmp
                 } else {
                     var tmp = ""
-                    while (currentToken !in setOf(Eol, Eof)) {
-                        if (currentToken == Garbage('.') && !tmp.contains('.')) {
+                    while (source.current !in setOf(Eol, Eof)) {
+                        if (source.current == Garbage('.') && !tmp.contains('.')) {
                             tmp += "."
                         }
-                        if (currentToken is Word) {
-                            tmp += currentToken.text.length % 10
+                        if (source.current is Word) {
+                            tmp += source.current.text.length % 10
                         }
-                        next()
+                        source.next()
                     }
                     tmp
                 }
                 NumberLiteralExpression(numberAsString.trimEnd('.').toDouble())
             }
         }
-        currentToken mustBe any(Eol, Eof)
+        source.current mustBe any(Eol, Eof)
         return AssignmentStatement(identifier, value)
     }
 
-    private fun parseFunctionDeclaration(identifier: Identifier): FunctionDeclaration {
-        currentToken mustBe KW_TAKES
-        next()
-        val parameters = extractParameters().map {
+    private fun parseFunctionDeclaration(identifier: Identifier, source: TokenSource): FunctionDeclaration {
+        source.current mustBe KW_TAKES
+        source.next()
+        val parameters = extractParameters(source).map {
             Identifier(it.joinToString("") {token -> token.text}.trim())
         }
-        next()
-        return FunctionDeclaration(identifier, parameters, parseBlockStatement())
+        source.next()
+        return FunctionDeclaration(identifier, parameters, parseBlockStatement(source))
     }
 
-    private fun parseReturn(): ReturnStatement {
-        currentToken mustBe KW_GIVE
-        next() mustBe Space
-        next() mustBe KW_BACK
-        next() mustBe Space
-        return ReturnStatement(parseExpression(skipToNextEolOrEof()))
+    private fun parseReturn(source: TokenSource): ReturnStatement {
+        source.current mustBe KW_GIVE
+        source.next() mustBe Space
+        source.next() mustBe KW_BACK
+        source.next() mustBe Space
+        return ReturnStatement(parseExpression(source.skipToNextEolOrEof()))
     }
 
-    private fun parseIncrement(): IncrementStatement {
-        currentToken mustBe KW_BUILD
-        next() mustBe Space
-        next()
-        val identifier = parseIdentifier()
-        while (currentToken is Space) {
-            next()
+    private fun parseIncrement(source: TokenSource): IncrementStatement {
+        source.current mustBe KW_BUILD
+        source.next() mustBe Space
+        source.next()
+        val identifier = parseIdentifier(source)
+        while (source.current is Space) {
+            source.next()
         }
-        currentToken mustBe KW_UP
-        next()
+        source.current mustBe KW_UP
+        source.next()
         var amount = 1
-        while (currentToken == Garbage(',')) {
-            skipToNextWordIfNecessary()
-            if (currentToken != KW_UP) {
-                throw UnexpectedTokenException(currentToken.text)
+        while (source.current == Garbage(',')) {
+            source.skipToNextWordIfNecessary()
+            if (source.current != KW_UP) {
+                throw UnexpectedTokenException(source.current.text)
             }
-            next()
+            source.next()
             amount++
         }
         return IncrementStatement(identifier, amount)
     }
 
-    private fun parseDecrement(): DecrementStatement {
-        currentToken mustBe KW_KNOCK
-        next() mustBe Space
-        next()
-        val identifier = parseIdentifier()
-        currentToken mustBe KW_DOWN
-        next()
+    private fun parseDecrement(source: TokenSource): DecrementStatement {
+        source.current mustBe KW_KNOCK
+        source.next() mustBe Space
+        source.next()
+        val identifier = parseIdentifier(source)
+        source.current mustBe KW_DOWN
+        source.next()
         var amount = 1
-        while (currentToken == Garbage(',')) {
-            skipToNextWordIfNecessary()
-            if (currentToken != KW_DOWN) {
-                throw UnexpectedTokenException(currentToken.text)
+        while (source.current == Garbage(',')) {
+            source.skipToNextWordIfNecessary()
+            if (source.current != KW_DOWN) {
+                throw UnexpectedTokenException(source.current.text)
             }
-            next()
+            source.next()
             amount++
         }
         return DecrementStatement(identifier, amount)
     }
 
-    private fun parseContinue(): ContinueStatement {
-        skipToNextEolOrEof()
+    private fun parseContinue(source: TokenSource): ContinueStatement {
+        source.skipToNextEolOrEof()
         return ContinueStatement()
     }
 
-    private fun parseBreak(): BreakStatement {
-        skipToNextEolOrEof()
+    private fun parseBreak(source: TokenSource): BreakStatement {
+        source.skipToNextEolOrEof()
         return BreakStatement()
     }
 
-    private fun parseIf(): IfStatement {
-        currentToken mustBe KW_IF
-        next()
-        currentToken mustBe Space
-        next()
-        val condition = parseExpression(skipToNextEolOrEof())
-        next()
-        val thenBlock = parseBlockStatement()
-        val elseBlock = if (currentToken == KW_ELSE) {
-            next()
-            currentToken mustBe Eol
-            next()
-            parseBlockStatement()
+    private fun parseIf(source: TokenSource): IfStatement {
+        source.current mustBe KW_IF
+        source.next()
+        source.current mustBe Space
+        source.next()
+        val condition = parseExpression(source.skipToNextEolOrEof())
+        source.next()
+        val thenBlock = parseBlockStatement(source)
+        val elseBlock = if (source.current == KW_ELSE) {
+            source.next()
+            source.current mustBe Eol
+            source.next()
+            parseBlockStatement(source)
         } else null
         return IfStatement(condition, thenBlock, elseBlock)
     }
 
-    private fun parseWhileLoop(): WhileLoopStatement {
-        currentToken mustBe KW_WHILE
-        next() mustBe Space
-        next()
-        val condition = parseExpression(skipToNextEolOrEof())
-        next()
-        return WhileLoopStatement(condition, parseBlockStatement())
+    private fun parseWhileLoop(source: TokenSource): WhileLoopStatement {
+        source.current mustBe KW_WHILE
+        source.next() mustBe Space
+        source.next()
+        val condition = parseExpression(source.skipToNextEolOrEof())
+        source.next()
+        return WhileLoopStatement(condition, parseBlockStatement(source))
     }
 
-    private fun parseUntilLoop(): UntilLoopStatement {
-        currentToken mustBe KW_UNTIL
-        next() mustBe Space
-        next()
-        val condition = parseExpression(skipToNextEolOrEof())
-        next()
-        return UntilLoopStatement(condition, parseBlockStatement())
+    private fun parseUntilLoop(source: TokenSource): UntilLoopStatement {
+        source.current mustBe KW_UNTIL
+        source.next() mustBe Space
+        source.next()
+        val condition = parseExpression(source.skipToNextEolOrEof())
+        source.next()
+        return UntilLoopStatement(condition, parseBlockStatement(source))
     }
 
-    private fun parseBlockStatement(): BlockStatement {
+    private fun parseBlockStatement(source: TokenSource): BlockStatement {
         val statements = mutableListOf<Statement>()
-        if (currentToken == Eof) {
+        if (source.current == Eof) {
             throw UnexpectedTokenException("Found Eof at start of a block")
         }
-        while (currentToken != Eof) {
-            if (currentToken == KW_ELSE) {
+        while (source.current != Eof) {
+            if (source.current == KW_ELSE) {
                 break
             }
-            while (currentToken !is Word && currentToken !is Eol) {
-                next()
+            while (source.current !is Word && source.current !is Eol) {
+                source.next()
             }
-            if (currentToken is Eof || currentToken is Eol) {
+            if (source.current is Eof || source.current is Eol) {
                 break
             }
-            statements.add(parseStatement())
-            currentToken mustBe any(Eof, Eol)
-            next()
-            while (currentToken is Space) {
-                next()
+            statements.add(parseStatement(source))
+            source.current mustBe any(Eof, Eol)
+            source.next()
+            while (source.current is Space) {
+                source.next()
             }
-            if (currentToken is Eol || currentToken is Eof) {
+            if (source.current is Eol || source.current is Eof) {
                 break
             }
         }
         return BlockStatement(statements)
     }
 
-    private fun parseListenTo(): ReadLineStatement {
-        currentToken mustBe KW_LISTEN
-        next() mustBe Space
-        next() mustBe KW_TO
-        next() mustBe Space
-        next()
-        return ReadLineStatement(parseIdentifier())
+    private fun parseListenTo(source: TokenSource): ReadLineStatement {
+        source.current mustBe KW_LISTEN
+        source.next() mustBe Space
+        source.next() mustBe KW_TO
+        source.next() mustBe Space
+        source.next()
+        return ReadLineStatement(parseIdentifier(source))
     }
 
-    private fun parseSay(): PrintLineStatement {
-        currentToken mustBe any(KW_SAY, KW_SHOUT, KW_SCREAM, KW_WHISPER)
-        next() mustBe Space
-        next()
-        return PrintLineStatement(parseExpression(skipToNextEolOrEof()))
+    private fun parseSay(source: TokenSource): PrintLineStatement {
+        source.current mustBe any(KW_SAY, KW_SHOUT, KW_SCREAM, KW_WHISPER)
+        source.next() mustBe Space
+        source.next()
+        return PrintLineStatement(parseExpression(source.skipToNextEolOrEof()))
     }
 
-    private fun parsePutInto(): AssignmentStatement {
-        currentToken mustBe KW_PUT
-        next() mustBe Space
-        next()
-        val start = index
-        while (currentToken != KW_INTO) {
-            if (currentToken is Eol || currentToken is Eof) {
+    private fun parsePutInto(source: TokenSource): AssignmentStatement {
+        source.current mustBe KW_PUT
+        source.next() mustBe Space
+        source.next()
+        val start = source.index
+        while (source.current != KW_INTO) {
+            if (source.current is Eol || source.current is Eof) {
                 throw ParserException("Put without into")
             }
-            next()
+            source.next()
         }
-        next() mustBe Space
-        next()
-        val expression = parseExpression(tokens.subList(start, index))
-        return AssignmentStatement(parseIdentifier(), expression)
+        source.next() mustBe Space
+        source.next()
+        val expression = parseExpression(source.subList(start, source.index))
+        return AssignmentStatement(parseIdentifier(source), expression)
     }
 
-    private fun matchContinue(): Boolean {
-        if (currentToken == KW_CONTINUE) {
+    private fun matchContinue(source: TokenSource): Boolean {
+        if (source.current == KW_CONTINUE) {
             return true
         }
-        return currentToken == KW_TAKE
-            && lookahead(1) == Space
-            && lookahead(2) == KW_IT
-            && lookahead(3) == Space
-            && lookahead(4) == KW_TO
-            && lookahead(5) == Space
-            && lookahead(6) == KW_THE
-            && lookahead(7) == Space
-            && lookahead(8) == KW_TOP
-            && lookahead(9) in setOf(Eol, Eof)
+        return source.current == KW_TAKE
+            && source.lookahead(1) == Space
+            && source.lookahead(2) == KW_IT
+            && source.lookahead(3) == Space
+            && source.lookahead(4) == KW_TO
+            && source.lookahead(5) == Space
+            && source.lookahead(6) == KW_THE
+            && source.lookahead(7) == Space
+            && source.lookahead(8) == KW_TOP
+            && source.lookahead(9) in setOf(Eol, Eof)
     }
 
-    private fun matchBreak(): Boolean {
-        if (currentToken == KW_BREAK && lookahead(1) in setOf(Eol, Eof)) {
+    private fun matchBreak(source: TokenSource): Boolean {
+        if (source.current == KW_BREAK && source.lookahead(1) in setOf(Eol, Eof)) {
             return true
         }
-        return currentToken == KW_BREAK
-            && lookahead(1) == Space
-            && lookahead(2) == KW_IT
-            && lookahead(3) == Space
-            && lookahead(4) == KW_DOWN
-            && lookahead(5) in setOf(Eol, Eof)
+        return source.current == KW_BREAK
+            && source.lookahead(1) == Space
+            && source.lookahead(2) == KW_IT
+            && source.lookahead(3) == Space
+            && source.lookahead(4) == KW_DOWN
+            && source.lookahead(5) in setOf(Eol, Eof)
     }
 
-    private fun extractParameters(): List<List<Token>> {
-        val argumentTokens: MutableList<List<Token>> = mutableListOf()
-        var start = index
-        while (currentToken != Eof) {
-            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol)) {
-                argumentTokens.add(tokens.subList(start, index))
-                if (currentToken == COMMA && lookahead(1) == KW_AND) {
-                    next()
+    private fun extractParameters(source: TokenSource): List<TokenSource> {
+        val argumentTokens: MutableList<TokenSource> = mutableListOf()
+        var start = source.index
+        while (source.current != Eof) {
+            if (source.current in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol)) {
+                argumentTokens.add(source.subList(start, source.index))
+                if (source.current == COMMA && source.lookahead(1) == KW_AND) {
+                    source.next()
                 }
-                if (currentToken == Eol) {
+                if (source.current == Eol) {
                     break
                 }
-                next()
-                start = index
+                source.next()
+                start = source.index
             } else {
-                next()
+                source.next()
             }
         }
         return argumentTokens
     }
 
-    private fun parseExpression(tokens: List<Token>): Expression {
-        val parser = ExpressionParser(tokens)
+    private fun parseExpression(source: TokenSource): Expression {
+        val parser = ExpressionParser()
         parser.lastName = lastName
-        return parser.parseExpression().also { lastName = parser.lastName }
+        return parser.parseExpression(source.filtered { it !is Space }).also { lastName = parser.lastName }
     }
 }

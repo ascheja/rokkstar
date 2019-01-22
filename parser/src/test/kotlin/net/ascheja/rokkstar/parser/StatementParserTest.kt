@@ -1,6 +1,7 @@
 package net.ascheja.rokkstar.parser
 
 import net.ascheja.rokkstar.ast.Identifier
+import net.ascheja.rokkstar.ast.Statement
 import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.statements.*
 import org.junit.Assert.assertEquals
@@ -11,17 +12,17 @@ class StatementParserTest {
     @Test
     fun `say,whisper,scream,shout statements parsed correctly`() {
         val expected = PrintLineStatement(VariableExpression(Identifier("my identifier")))
-        assertEquals(expected, createParser("Say my identifier").parseStatement())
-        assertEquals(expected, createParser("Whisper my identifier").parseStatement())
-        assertEquals(expected, createParser("Scream my identifier").parseStatement())
-        assertEquals(expected, createParser("Shout my identifier").parseStatement())
+        assertEquals(expected, createParser().parseStatement("Say my identifier"))
+        assertEquals(expected, createParser().parseStatement("Whisper my identifier"))
+        assertEquals(expected, createParser().parseStatement("Scream my identifier"))
+        assertEquals(expected, createParser().parseStatement("Shout my identifier"))
     }
 
     @Test
     fun `Listen to parsed correctly`() {
         assertEquals(
             ReadLineStatement(Identifier("the music")),
-            createParser("Listen to the music").parseStatement()
+            createParser().parseStatement("Listen to the music")
         )
     }
 
@@ -29,7 +30,7 @@ class StatementParserTest {
     fun `Put into parsed correctly`() {
         assertEquals(
             AssignmentStatement(Identifier("your heart"), VariableExpression(Identifier("Everything"))),
-            createParser("Put Everything into your heart").parseStatement()
+            createParser().parseStatement("Put Everything into your heart")
         )
     }
 
@@ -37,7 +38,7 @@ class StatementParserTest {
     fun `Poetic string literal assignment parsed correctly`() {
         assertEquals(
             AssignmentStatement(Identifier("Your heart"), StringLiteralExpression(";!bla bla???<>")),
-            createParser("Your heart says ;!bla bla???<>").parseStatement()
+            createParser().parseStatement("Your heart says ;!bla bla???<>")
         )
     }
 
@@ -45,7 +46,7 @@ class StatementParserTest {
     fun `Poetic number literal assignment parsed correctly`() {
         assertEquals(
             AssignmentStatement(Identifier("Tommy"), NumberLiteralExpression(14487.0)),
-            createParser("Tommy was a lean, mean wrecking machine.").parseStatement()
+            createParser().parseStatement("Tommy was a lean, mean wrecking machine.")
         )
     }
 
@@ -55,7 +56,7 @@ class StatementParserTest {
             Identifier("variable"),
             UndefinedLiteralExpression()
         )
-        assertEquals(expected, createParser("variable is mysterious").parseStatement())
+        assertEquals(expected, createParser().parseStatement("variable is mysterious"))
     }
 
     @Test
@@ -65,7 +66,7 @@ class StatementParserTest {
             BooleanLiteralExpression(true)
         )
         for (keyword in setOf("true", "right", "yes", "ok")) {
-            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+            assertEquals(expected, createParser().parseStatement("variable is $keyword"))
         }
     }
 
@@ -76,7 +77,7 @@ class StatementParserTest {
             BooleanLiteralExpression(false)
         )
         for (keyword in setOf("false", "wrong", "no", "lies")) {
-            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+            assertEquals(expected, createParser().parseStatement("variable is $keyword"))
         }
     }
 
@@ -87,7 +88,7 @@ class StatementParserTest {
             NullLiteralExpression()
         )
         for (keyword in setOf("null", "nothing", "nowhere", "nobody", "empty", "gone")) {
-            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+            assertEquals(expected, createParser().parseStatement("variable is $keyword"))
         }
     }
 
@@ -99,7 +100,7 @@ class StatementParserTest {
         )
         assertEquals(
             expected,
-            createParser("variable is \"some text rockstar doesn't give a shit about\"").parseStatement()
+            createParser().parseStatement("variable is \"some text rockstar doesn't give a shit about\"")
         )
     }
 
@@ -112,7 +113,7 @@ class StatementParserTest {
             )
             assertEquals(
                 expected,
-                createParser("variable is $input").parseStatement()
+                createParser().parseStatement("variable is $input")
             )
         }
     }
@@ -129,7 +130,7 @@ class StatementParserTest {
                 ),
                 BlockStatement(ReadLineStatement(identifier))
             ),
-            createParser("If my name is nothing\nListen to my name").parseStatement()
+            createParser().parseStatement("If my name is nothing\nListen to my name")
         )
     }
 
@@ -146,7 +147,7 @@ class StatementParserTest {
                 BlockStatement(ReadLineStatement(identifier)),
                 BlockStatement(PrintLineStatement(VariableExpression(identifier)))
             ),
-            createParser("If my name is nothing\nListen to my name\nElse\nShout my name").parseStatement()
+            createParser().parseStatement("If my name is nothing\nListen to my name\nElse\nShout my name")
         )
     }
 
@@ -156,7 +157,7 @@ class StatementParserTest {
             BooleanLiteralExpression(true),
             BlockStatement(PrintLineStatement(NullLiteralExpression()))
         )
-        assertEquals(expected, createParser("While true\nSay nothing").parseStatement())
+        assertEquals(expected, createParser().parseStatement("While true\nSay nothing"))
     }
 
     @Test
@@ -165,7 +166,7 @@ class StatementParserTest {
             BooleanLiteralExpression(true),
             BlockStatement(PrintLineStatement(NullLiteralExpression()))
         )
-        assertEquals(expected, createParser("Until true\nSay nothing").parseStatement())
+        assertEquals(expected, createParser().parseStatement("Until true\nSay nothing"))
     }
 
     @Test
@@ -181,7 +182,7 @@ class StatementParserTest {
                 )
             )
         )
-        assertEquals(expected, createParser("Put Multiply taking 3, 5, and 9 into Large").parseStatement())
+        assertEquals(expected, createParser().parseStatement("Put Multiply taking 3, 5, and 9 into Large"))
     }
 
     @Test
@@ -191,8 +192,12 @@ class StatementParserTest {
             listOf(Identifier("Needle"), Identifier("Haystack")),
             BlockStatement(listOf(ReturnStatement(VariableExpression(Identifier("Needle")))))
         )
-        assertEquals(expected, createParser("Search takes Needle and Haystack\nGive back Needle").parseStatement())
+        assertEquals(expected, createParser().parseStatement("Search takes Needle and Haystack\nGive back Needle"))
     }
 
-    private fun createParser(text: String): StatementParser = StatementParser(Lexer(text).tokens)
+    private fun createParser(): StatementParser = StatementParser()
+
+    private fun StatementParser.parseStatement(text: String): Statement {
+        return parseStatement(Lexer(text).toTokenSource())
+    }
 }

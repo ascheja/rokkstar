@@ -128,10 +128,10 @@ fun displayHelp(): Nothing {
     exitProcess(1)
 }
 
-fun parseProgram(file: File): Program = StatementParser(Lexer(file.readText()).tokens).parseProgram()
+fun parseProgram(file: File): Program = parseProgram(file.readText())
 
 fun parseProgram(content: String): Program {
-    return StatementParser(Lexer(content).tokens).parseProgram()
+    return StatementParser().parseProgram(Lexer(content).toTokenSource())
 }
 
 fun runProgram(

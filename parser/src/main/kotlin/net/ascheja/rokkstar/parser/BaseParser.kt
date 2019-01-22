@@ -3,13 +3,7 @@ package net.ascheja.rokkstar.parser
 import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.parser.Token.*
 
-open class BaseParser internal constructor(protected val tokens: List<Token>) {
-
-    init {
-        if (tokens.isEmpty()) {
-            throw ParserException("No tokens to parse")
-        }
-    }
+open class BaseParser {
 
     internal var lastName: String? = null
 
@@ -97,43 +91,6 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         val NUMERIC_CHECK = Regex("[0-9]+")
     }
 
-    protected var index = 0
-        private set
-
-    protected val currentToken: Token
-        get() = if (index != tokens.size) tokens[index] else Eof
-
-    protected fun next(): Token {
-        if (index < tokens.size) {
-            index++
-        }
-        return currentToken
-    }
-
-    protected fun skipToNextEolOrEof(): List<Token> {
-        val skipped = mutableListOf<Token>()
-        while (currentToken !in setOf(Eol, Eof)) {
-            skipped.add(currentToken)
-            next()
-        }
-        return skipped
-    }
-
-    protected fun skipToNextWordIfNecessary(): List<Token> {
-        val skipped = mutableListOf<Token>()
-        while (currentToken !is Word) {
-            skipped.add(currentToken)
-            next()
-        }
-        return skipped
-    }
-
-    protected fun lookahead(n: Int): Token = if (index + n < tokens.size) {
-        if (index + n >= 0) tokens[index + n] else tokens.first()
-    } else {
-        Eof
-    }
-
     infix fun Token.mustBe(expectation: (Token) -> Unit): Token {
         expectation(this)
         return this
@@ -166,39 +123,39 @@ open class BaseParser internal constructor(protected val tokens: List<Token>) {
         }
     }
 
-    protected fun parseIdentifier(): Identifier = Identifier(parseName())
+    protected fun parseIdentifier(source: TokenSource): Identifier = Identifier(parseName(source))
 
-    private fun parseName(): String {
-        currentToken mustBe Type.WORD
-        if (currentToken in PRONOUNS) {
-            next()
+    private fun parseName(source: TokenSource): String {
+        source.current mustBe Type.WORD
+        if (source.current in PRONOUNS) {
+            source.next()
             return lastName ?: throw UnexpectedTokenException("found pronoun, but no identifier has been mentioned previously")
         }
-        return if (currentToken in COMMON_VARIABLE_PREFIXES) {
+        return if (source.current in COMMON_VARIABLE_PREFIXES) {
             //common variable
-            val prefix = currentToken.text
-            if (lookahead(1) is Space) {
-                next()
+            val prefix = source.current.text
+            if (source.lookahead(1) is Space) {
+                source.next()
             }
-            next() mustBe Type.WORD
-            prefix + " " + currentToken.text
+            source.next() mustBe Type.WORD
+            prefix + " " + source.current.text
         } else {
             //proper variable
-            var temp = currentToken.text
+            var temp = source.current.text
             while (true) {
-                if (lookahead(1) is Space) {
-                    next()
+                if (source.lookahead(1) is Space) {
+                    source.next()
                 }
-                if (lookahead(1).let { it !is Word || it in PROPER_VARIABLE_TERMINATORS }) {
+                if (source.lookahead(1).let { it !is Word || it in PROPER_VARIABLE_TERMINATORS }) {
                     break
                 }
-                next()
-                temp += " " + currentToken.text
+                source.next()
+                temp += " " + source.current.text
             }
             temp
         }.also {
             lastName = it
-            next()
+            source.next()
         }
     }
 }

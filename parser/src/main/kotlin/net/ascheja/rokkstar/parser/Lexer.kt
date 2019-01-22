@@ -15,6 +15,10 @@ class Lexer(private val input: CharSequence) {
 
     val tokens: List<Token> by lazy { tokenize().toList() }
 
+    fun toTokenSource(filterFunction: (Token) -> Boolean = { it !is Comment }): TokenSource {
+        return TokenSource(tokens.filter(filterFunction))
+    }
+
     private fun tokenize() = sequence {
         while (index < input.length) {
             val char = input[index]

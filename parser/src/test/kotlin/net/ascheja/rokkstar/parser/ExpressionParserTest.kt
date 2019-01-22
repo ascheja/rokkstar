@@ -1,5 +1,6 @@
 package net.ascheja.rokkstar.parser
 
+import net.ascheja.rokkstar.ast.Expression
 import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
@@ -13,7 +14,7 @@ class ExpressionParserTest {
     fun `mysterious assignment parsed correctly`() {
         assertEquals(
             UndefinedLiteralExpression(),
-            createParser("mysterious").parseExpression()
+            createParser().parseExpression("mysterious")
         )
     }
 
@@ -22,7 +23,7 @@ class ExpressionParserTest {
         for (keyword in setOf("true", "right", "yes", "ok")) {
             assertEquals(
                 BooleanLiteralExpression(true),
-                createParser(keyword).parseExpression()
+                createParser().parseExpression(keyword)
             )
         }
     }
@@ -32,7 +33,7 @@ class ExpressionParserTest {
         for (keyword in setOf("false", "wrong", "no", "lies")) {
             assertEquals(
                 BooleanLiteralExpression(false),
-                createParser(keyword).parseExpression()
+                createParser().parseExpression(keyword)
             )
         }
     }
@@ -40,7 +41,7 @@ class ExpressionParserTest {
     @Test
     fun `null assignment parsed correctly`() {
         for (keyword in setOf("null", "nothing", "nowhere", "nobody", "empty", "gone")) {
-            assertEquals(NullLiteralExpression(), createParser(keyword).parseExpression())
+            assertEquals(NullLiteralExpression(), createParser().parseExpression(keyword))
         }
     }
 
@@ -48,7 +49,7 @@ class ExpressionParserTest {
     fun `string assignment parsed correctly`() {
         assertEquals(
             StringLiteralExpression("some text rockstar doesn't give a shit about"),
-            createParser("\"some text rockstar doesn't give a shit about\"").parseExpression()
+            createParser().parseExpression("\"some text rockstar doesn't give a shit about\"")
         )
     }
 
@@ -57,7 +58,7 @@ class ExpressionParserTest {
         for ((input, expectedValue) in listOf("2" to 2.0, "0" to 0.0, "0.273" to 0.273, "10.9" to 10.9)) {
             assertEquals(
                 NumberLiteralExpression(expectedValue),
-                createParser(input).parseExpression()
+                createParser().parseExpression(input)
             )
         }
     }
@@ -71,7 +72,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("true and true").parseExpression()
+            createParser().parseExpression("true and true")
         )
     }
 
@@ -84,7 +85,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("true or true").parseExpression()
+            createParser().parseExpression("true or true")
         )
     }
 
@@ -97,7 +98,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("true nor true").parseExpression()
+            createParser().parseExpression("true nor true")
         )
     }
 
@@ -110,7 +111,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("true is true").parseExpression()
+            createParser().parseExpression("true is true")
         )
     }
 
@@ -124,7 +125,7 @@ class ExpressionParserTest {
         for (keyword in setOf("ain't", "isn't")) {
             assertEquals(
                 expected,
-                createParser("true $keyword true").parseExpression()
+                createParser().parseExpression("true $keyword true")
             )
         }
     }
@@ -139,7 +140,7 @@ class ExpressionParserTest {
         for (keyword in setOf("higher", "bigger", "greater", "stronger")) {
             assertEquals(
                 expected,
-                createParser("true is $keyword than true").parseExpression()
+                createParser().parseExpression("true is $keyword than true")
             )
         }
     }
@@ -154,7 +155,7 @@ class ExpressionParserTest {
         for (keyword in setOf("high", "big", "great", "strong")) {
             assertEquals(
                 expected,
-                createParser("true is as $keyword as true").parseExpression()
+                createParser().parseExpression("true is as $keyword as true")
             )
         }
     }
@@ -169,7 +170,7 @@ class ExpressionParserTest {
         for (keyword in setOf("less", "lower", "smaller", "weaker")) {
             assertEquals(
                 expected,
-                createParser("true is $keyword than true").parseExpression()
+                createParser().parseExpression("true is $keyword than true")
             )
         }
     }
@@ -184,7 +185,7 @@ class ExpressionParserTest {
         for (keyword in setOf("low", "little", "small", "weak")) {
             assertEquals(
                 expected,
-                createParser("true is as $keyword as true").parseExpression()
+                createParser().parseExpression("true is as $keyword as true")
             )
         }
     }
@@ -199,7 +200,7 @@ class ExpressionParserTest {
         for (keyword in setOf("plus", "with")) {
             assertEquals(
                 expected,
-                createParser("true $keyword true").parseExpression()
+                createParser().parseExpression("true $keyword true")
             )
         }
     }
@@ -214,7 +215,7 @@ class ExpressionParserTest {
         for (keyword in setOf("minus", "without")) {
             assertEquals(
                 expected,
-                createParser("true $keyword true").parseExpression()
+                createParser().parseExpression("true $keyword true")
             )
         }
     }
@@ -229,7 +230,7 @@ class ExpressionParserTest {
         for (keyword in setOf("times", "of")) {
             assertEquals(
                 expected,
-                createParser("true $keyword true").parseExpression()
+                createParser().parseExpression("true $keyword true")
             )
         }
     }
@@ -243,7 +244,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("true over true").parseExpression()
+            createParser().parseExpression("true over true")
         )
     }
 
@@ -255,7 +256,7 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("not true").parseExpression()
+            createParser().parseExpression("not true")
         )
     }
 
@@ -263,7 +264,7 @@ class ExpressionParserTest {
     fun `variable parsed correctly`() {
         assertEquals(
             VariableExpression(Identifier("my variable")),
-            createParser("my variable").parseExpression()
+            createParser().parseExpression("my variable")
         )
     }
 
@@ -282,16 +283,14 @@ class ExpressionParserTest {
         )
         assertEquals(
             expected,
-            createParser("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and Happiness")
-                .parseExpression()
+            createParser().parseExpression("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and Happiness")
         )
     }
 
     @Test
     fun `function call with dangling separator is an error`() {
         try {
-            createParser("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and")
-                .parseExpression()
+            createParser().parseExpression("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and")
             fail()
         } catch (e: ParserException) {
             assertEquals("Dangling separator", e.message)
@@ -301,12 +300,18 @@ class ExpressionParserTest {
     @Test
     fun `dangling operand is an error`() {
         try {
-            createParser("my variable plus").parseExpression()
+            createParser().parseExpression("my variable plus")
             fail()
         } catch (e: ParserException) {
             assertEquals("expected token to be of type WORD, got EOF", e.message)
         }
     }
 
-    private fun createParser(text: String): ExpressionParser = ExpressionParser(Lexer(text).tokens)
+    private fun createParser(): ExpressionParser {
+        return ExpressionParser()
+    }
+
+    private fun ExpressionParser.parseExpression(text: String): Expression {
+        return this.parseExpression(Lexer(text).toTokenSource { it !is Token.Comment && it !is Token.Space })
+    }
 }

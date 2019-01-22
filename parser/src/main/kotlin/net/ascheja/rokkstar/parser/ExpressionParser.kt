@@ -5,150 +5,150 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import net.ascheja.rokkstar.parser.Token.*
 
-class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Space}) {
+class ExpressionParser: BaseParser() {
 
-    fun parseExpression(): Expression {
-        return parseLogicalExpression()
+    fun parseExpression(source: TokenSource): Expression {
+        return parseLogicalExpression(source)
     }
 
-    private fun parseLogicalExpression(): Expression {
-        var left = parseComparisonExpression()
-        while (currentToken in setOf(KW_AND, KW_OR, KW_NOR)) {
-            val operator = when (currentToken) {
+    private fun parseLogicalExpression(source: TokenSource): Expression {
+        var left = parseComparisonExpression(source)
+        while (source.current in setOf(KW_AND, KW_OR, KW_NOR)) {
+            val operator = when (source.current) {
                 KW_AND -> AND
                 KW_OR -> OR
                 else -> NOR
             }
-            next()
-            left = BinaryOperatorExpression(operator, left, parseComparisonExpression())
+            source.next()
+            left = BinaryOperatorExpression(operator, left, parseComparisonExpression(source))
         }
         return left
     }
 
-    private fun parseComparisonExpression(): Expression {
-        var left = parseAdditionSubtractionExpression()
-        while (currentToken in setOf(KW_IS, KW_ISNT, KW_AINT)) {
+    private fun parseComparisonExpression(source: TokenSource): Expression {
+        var left = parseAdditionSubtractionExpression(source)
+        while (source.current in setOf(KW_IS, KW_ISNT, KW_AINT)) {
             val operator = when {
-                currentToken == KW_AINT || currentToken == KW_ISNT -> NOT_EQUALS
-                currentToken == KW_IS && lookahead(1) in GREATER_ALIASES && lookahead(2) == KW_THAN -> {
-                    next()
-                    next()
+                source.current == KW_AINT || source.current == KW_ISNT -> NOT_EQUALS
+                source.current == KW_IS && source.lookahead(1) in GREATER_ALIASES && source.lookahead(2) == KW_THAN -> {
+                    source.next()
+                    source.next()
                     GREATER
                 }
-                currentToken == KW_IS && lookahead(1) in LESS_ALIASES && lookahead(2) == KW_THAN -> {
-                    next()
-                    next()
+                source.current == KW_IS && source.lookahead(1) in LESS_ALIASES && source.lookahead(2) == KW_THAN -> {
+                    source.next()
+                    source.next()
                     LESS
                 }
-                currentToken == KW_IS && lookahead(1) == KW_AS && lookahead(2) in GREATER_EQUAL_ALIASES && lookahead(3) == KW_AS -> {
-                    next()
-                    next()
-                    next()
+                source.current == KW_IS && source.lookahead(1) == KW_AS && source.lookahead(2) in GREATER_EQUAL_ALIASES && source.lookahead(3) == KW_AS -> {
+                    source.next()
+                    source.next()
+                    source.next()
                     GREATER_EQUALS
                 }
-                currentToken == KW_IS && lookahead(1) == KW_AS && lookahead(2) in LESS_EQUAL_ALIASES && lookahead(3) == KW_AS -> {
-                    next()
-                    next()
-                    next()
+                source.current == KW_IS && source.lookahead(1) == KW_AS && source.lookahead(2) in LESS_EQUAL_ALIASES && source.lookahead(3) == KW_AS -> {
+                    source.next()
+                    source.next()
+                    source.next()
                     LESS_EQUALS
                 }
                 else -> EQUALS
             }
-            next()
-            left = BinaryOperatorExpression(operator, left, parseAdditionSubtractionExpression())
+            source.next()
+            left = BinaryOperatorExpression(operator, left, parseAdditionSubtractionExpression(source))
         }
         return left
     }
 
-    private fun parseAdditionSubtractionExpression(): Expression {
-        var left = parseMultiplicationDivisionExpression()
-        while (currentToken in setOf(KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT)) {
-            val operator = if (currentToken == KW_MINUS || currentToken == KW_WITHOUT) SUBTRACT else ADD
-            next()
-            left = BinaryOperatorExpression(operator, left, parseMultiplicationDivisionExpression())
+    private fun parseAdditionSubtractionExpression(source: TokenSource): Expression {
+        var left = parseMultiplicationDivisionExpression(source)
+        while (source.current in setOf(KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT)) {
+            val operator = if (source.current == KW_MINUS || source.current == KW_WITHOUT) SUBTRACT else ADD
+            source.next()
+            left = BinaryOperatorExpression(operator, left, parseMultiplicationDivisionExpression(source))
         }
         return left
     }
 
-    private fun parseMultiplicationDivisionExpression(): Expression {
-        var left = parseUnaryExpression()
-        while (currentToken in setOf(KW_TIMES, KW_OF, KW_OVER)) {
-            val operator = if (currentToken == KW_OVER) DIVIDE else MULTIPLY
-            next()
-            left = BinaryOperatorExpression(operator, left, parseUnaryExpression())
+    private fun parseMultiplicationDivisionExpression(source: TokenSource): Expression {
+        var left = parseUnaryExpression(source)
+        while (source.current in setOf(KW_TIMES, KW_OF, KW_OVER)) {
+            val operator = if (source.current == KW_OVER) DIVIDE else MULTIPLY
+            source.next()
+            left = BinaryOperatorExpression(operator, left, parseUnaryExpression(source))
         }
         return left
     }
 
-    private fun parseUnaryExpression(): Expression {
-        while (currentToken == KW_NOT) {
-            next()
-            return UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, parseUnaryExpression())
+    private fun parseUnaryExpression(source: TokenSource): Expression {
+        while (source.current == KW_NOT) {
+            source.next()
+            return UnaryOperatorExpression(UnaryOperatorExpression.Operator.NOT, parseUnaryExpression(source))
         }
-        return parseFunctionCallExpression()
+        return parseFunctionCallExpression(source)
     }
 
-    private fun parseFunctionCallExpression(): Expression {
-        val left = parsePrimaryExpression()
-        if (left !is VariableExpression || currentToken != KW_TAKING) {
+    private fun parseFunctionCallExpression(source: TokenSource): Expression {
+        val left = parsePrimaryExpression(source)
+        if (left !is VariableExpression || source.current != KW_TAKING) {
             return left
         }
         val functionName = left.identifier
-        next()
-        return FunctionCallExpression(functionName, extractArguments().map { ExpressionParser(it).parseExpression() })
+        source.next()
+        return FunctionCallExpression(functionName, extractArguments(source).map { parseExpression(it) })
     }
 
-    private fun parsePrimaryExpression(): Expression {
-        return when (currentToken) {
-            is StringLiteral -> StringLiteralExpression(currentToken.text)
+    private fun parsePrimaryExpression(source: TokenSource): Expression {
+        return when (source.current) {
+            is StringLiteral -> StringLiteralExpression(source.current.text)
             KW_MYSTERIOUS -> UndefinedLiteralExpression()
             in NULL_ALIASES -> NullLiteralExpression()
             in TRUE_ALIASES -> BooleanLiteralExpression(true)
             in FALSE_ALIASES -> BooleanLiteralExpression(false)
             else -> {
-                if (currentToken.text.matches(NUMERIC_CHECK)) {
-                    parseNumberExpression()
+                if (source.current.text.matches(NUMERIC_CHECK)) {
+                    parseNumberExpression(source)
                 } else {
-                    VariableExpression(parseIdentifier())
+                    VariableExpression(parseIdentifier(source))
                 }
 
             }
         }.also {
             if (it !is VariableExpression && it !is NumberLiteralExpression) {
-                next()
+                source.next()
             }
         }
     }
 
-    private fun parseNumberExpression(): Expression {
+    private fun parseNumberExpression(source: TokenSource): Expression {
         var tmp = ""
-        while (currentToken.text.matches(NUMERIC_CHECK) || (currentToken == Garbage('.') && ('.' !in tmp))) {
-            tmp += currentToken.text
-            next()
+        while (source.current.text.matches(NUMERIC_CHECK) || (source.current == Garbage('.') && ('.' !in tmp))) {
+            tmp += source.current.text
+            source.next()
         }
         return NumberLiteralExpression(tmp.toDouble())
     }
 
-    private fun extractArguments(): List<List<Token>> {
-        val argumentTokens: MutableList<List<Token>> = mutableListOf()
-        var start = index
+    private fun extractArguments(source: TokenSource): List<TokenSource> {
+        val argumentTokens: MutableList<TokenSource> = mutableListOf()
+        var start = source.index
         var danglingSeparator = true
-        while (currentToken != Eof) {
-            if (currentToken in setOf(AMPERSAND, COMMA, Word("n"))) {
-                argumentTokens.add(tokens.subList(start, index))
+        while (source.current != Eof) {
+            if (source.current in setOf(AMPERSAND, COMMA, Word("n"))) {
+                argumentTokens.add(source.subList(start, source.index))
                 danglingSeparator = true
-                if (currentToken == COMMA && lookahead(1) == KW_AND) {
-                    next()
+                if (source.current == COMMA && source.lookahead(1) == KW_AND) {
+                    source.next()
                 }
-                next()
-                start = index
-            } else if (currentToken in PROPER_VARIABLE_TERMINATORS) {
-                argumentTokens.add(tokens.subList(start, index))
+                source.next()
+                start = source.index
+            } else if (source.current in PROPER_VARIABLE_TERMINATORS) {
+                argumentTokens.add(source.subList(start, source.index))
                 danglingSeparator = false
                 break
             } else {
-                if (next() is Eof) {
-                    argumentTokens.add(tokens.subList(start, index))
+                if (source.next() is Eof) {
+                    argumentTokens.add(source.subList(start, source.index))
                 }
                 danglingSeparator = false
             }

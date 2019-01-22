@@ -29,7 +29,7 @@ class ProgramTest {
     }
 
     private fun execute(content: String): String {
-        val program = StatementParser(Lexer(content).tokens).parseProgram()
+        val program = StatementParser().parseProgram(Lexer(content).toTokenSource())
         val output = StringBuilder()
         val context = Context.create({ "" } , { output.append(it).append("\n") })
         val interpreter = Interpreter(context)
