@@ -144,7 +144,9 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
                 argumentTokens.add(tokens.subList(start, index))
                 break
             } else {
-                next()
+                if (next() is Eof) {
+                    argumentTokens.add(tokens.subList(start, index))
+                }
             }
         }
         return argumentTokens

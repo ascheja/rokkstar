@@ -1,5 +1,6 @@
 package net.ascheja.rokkstar.parser
 
+import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import org.junit.Assert.assertEquals
@@ -254,6 +255,34 @@ class ExpressionParserTest {
         assertEquals(
             expected,
             createParser("not true").parseExpression()
+        )
+    }
+
+    @Test
+    fun `variable parsed correctly`() {
+        assertEquals(
+            VariableExpression(Identifier("my variable")),
+            createParser("my variable").parseExpression()
+        )
+    }
+
+    @Test
+    fun `function call parsed correctly`() {
+        val expected = FunctionCallExpression(
+            Identifier("my function"),
+            listOf(
+                VariableExpression(Identifier("my variable")),
+                VariableExpression(Identifier("Rock")),
+                VariableExpression(Identifier("Roll")),
+                NumberLiteralExpression(666.0),
+                StringLiteralExpression("Joy"),
+                VariableExpression(Identifier("Happiness"))
+            )
+        )
+        assertEquals(
+            expected,
+            createParser("my function taking my variable, Rock 'n' Roll, 666 & \"Joy\", and Happiness")
+                .parseExpression()
         )
     }
 
