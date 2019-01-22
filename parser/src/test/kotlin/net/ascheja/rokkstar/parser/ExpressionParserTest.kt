@@ -298,5 +298,15 @@ class ExpressionParserTest {
         }
     }
 
+    @Test
+    fun `dangling operand is an error`() {
+        try {
+            createParser("my variable plus").parseExpression()
+            fail()
+        } catch (e: ParserException) {
+            assertEquals("expected token to be of type WORD, got EOF", e.message)
+        }
+    }
+
     private fun createParser(text: String): ExpressionParser = ExpressionParser(Lexer(text).tokens)
 }
