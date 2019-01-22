@@ -32,7 +32,11 @@ fun main(args: Array<String>) {
     }
     when (args[0]) {
         "transpile:js" -> transpileJs(parseProgram(File(args[1])))
-        "run" -> runProgram(parseProgram(File(args[1])))
+        "run" -> {
+            System.`in`.bufferedReader().use { inputReader ->
+                runProgram(parseProgram(File(args[1])), { inputReader.readLine() ?: "" }, { println(it) })
+            }
+        }
         "api" -> runApi(args[1].toInt())
         else -> displayHelp()
     }
@@ -134,11 +138,6 @@ fun parseProgram(content: String): Program {
     return StatementParser().parseProgram(Lexer(content).toTokenSource())
 }
 
-fun runProgram(
-    program: Program,
-    reader: () -> String = { System.`in`.bufferedReader().readLine() },
-    writer: (Value) -> Unit = { println(it) }
-) {
-    val context = Context.create(reader, writer)
-    Interpreter(context).visitProgram(program)
+fun runProgram(program: Program, reader: () -> String, writer: (Value) -> Unit) {
+    Interpreter(Context.create(reader, writer)).visitProgram(program)
 }
