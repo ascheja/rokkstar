@@ -14,17 +14,19 @@ class StatementParser: BaseParser() {
     fun parseStatement(source: TokenSource): Statement {
         return when {
             source.current == KW_ELSE -> throw UnexpectedTokenException("else without if")
-            source.current == KW_LISTEN -> parseListenTo(source)
+            source.matchSeq(KW_LISTEN, Space, KW_TO) -> parseListenTo(source)
             source.current == KW_IF -> parseIf(source)
             source.current in setOf(KW_SAY, KW_SCREAM, KW_SHOUT, KW_WHISPER) -> parseSay(source)
             source.current == KW_PUT -> parsePutInto(source)
             source.current == KW_WHILE -> parseWhileLoop(source)
             source.current == KW_UNTIL -> parseUntilLoop(source)
-            matchContinue(source) -> parseContinue(source)
-            matchBreak(source) -> parseBreak(source)
+            source.matchSeq(KW_CONTINUE) -> parseContinue()
+            source.matchSeq(KW_TAKE, Space, KW_IT, Space, KW_TO, Space, KW_THE, Space, KW_TOP) -> parseContinue()
+            source.matchSeq(KW_BREAK, Space, KW_IT, Space, KW_DOWN) -> parseBreak()
+            source.matchSeq(KW_BREAK) -> parseBreak()
             source.current == KW_BUILD -> parseIncrement(source)
             source.current == KW_KNOCK -> parseDecrement(source)
-            source.current == KW_GIVE -> parseReturn(source)
+            source.matchSeq(KW_GIVE, Space, KW_BACK) -> parseReturn(source)
             else -> {
                 val identifier = parseIdentifier(source)
                 source.skipToNextWordIfNecessary()
@@ -99,9 +101,6 @@ class StatementParser: BaseParser() {
     }
 
     private fun parseReturn(source: TokenSource): ReturnStatement {
-        source.current mustBe KW_GIVE
-        source.next() mustBe Space
-        source.next() mustBe KW_BACK
         source.next() mustBe Space
         return ReturnStatement(parseExpression(source.skipToNextEolOrEof()))
     }
@@ -147,13 +146,11 @@ class StatementParser: BaseParser() {
         return DecrementStatement(identifier, amount)
     }
 
-    private fun parseContinue(source: TokenSource): ContinueStatement {
-        source.skipToNextEolOrEof()
+    private fun parseContinue(): ContinueStatement {
         return ContinueStatement()
     }
 
-    private fun parseBreak(source: TokenSource): BreakStatement {
-        source.skipToNextEolOrEof()
+    private fun parseBreak(): BreakStatement {
         return BreakStatement()
     }
 
@@ -221,9 +218,6 @@ class StatementParser: BaseParser() {
     }
 
     private fun parseListenTo(source: TokenSource): ReadLineStatement {
-        source.current mustBe KW_LISTEN
-        source.next() mustBe Space
-        source.next() mustBe KW_TO
         source.next() mustBe Space
         source.next()
         return ReadLineStatement(parseIdentifier(source))
@@ -251,34 +245,6 @@ class StatementParser: BaseParser() {
         source.next()
         val expression = parseExpression(source.subList(start, source.index))
         return AssignmentStatement(parseIdentifier(source), expression)
-    }
-
-    private fun matchContinue(source: TokenSource): Boolean {
-        if (source.current == KW_CONTINUE) {
-            return true
-        }
-        return source.current == KW_TAKE
-            && source.lookahead(1) == Space
-            && source.lookahead(2) == KW_IT
-            && source.lookahead(3) == Space
-            && source.lookahead(4) == KW_TO
-            && source.lookahead(5) == Space
-            && source.lookahead(6) == KW_THE
-            && source.lookahead(7) == Space
-            && source.lookahead(8) == KW_TOP
-            && source.lookahead(9) in setOf(Eol, Eof)
-    }
-
-    private fun matchBreak(source: TokenSource): Boolean {
-        if (source.current == KW_BREAK && source.lookahead(1) in setOf(Eol, Eof)) {
-            return true
-        }
-        return source.current == KW_BREAK
-            && source.lookahead(1) == Space
-            && source.lookahead(2) == KW_IT
-            && source.lookahead(3) == Space
-            && source.lookahead(4) == KW_DOWN
-            && source.lookahead(5) in setOf(Eol, Eof)
     }
 
     private fun extractParameters(source: TokenSource): List<TokenSource> {

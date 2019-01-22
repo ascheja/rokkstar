@@ -20,6 +20,15 @@ class TokenSource(private val tokens: List<Token>): Iterable<Token> by tokens {
         Token.Eof
     }
 
+    fun matchSeq(vararg match: Token): Boolean {
+        for ((i, token) in match.withIndex()) {
+            if (lookahead(i) != token) {
+                return false
+            }
+        }
+        return true.also { index += match.size - 1 }
+    }
+
     fun skipToNextEolOrEof(): TokenSource {
         val skipped = mutableListOf<Token>()
         while (current !in setOf(Token.Eol, Token.Eof)) {
