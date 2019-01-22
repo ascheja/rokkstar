@@ -3,9 +3,9 @@ package net.ascheja.rokkstar.parser
 import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.parser.Token.*
 
-open class BaseParser {
+open class BaseParser(lastNameDelegate: LastNameDelegate) {
 
-    internal var lastName: String? = null
+    internal var lastName: String? by lastNameDelegate
 
     companion object {
         val PRONOUNS = setOf(

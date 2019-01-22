@@ -5,7 +5,9 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.statements.*
 import net.ascheja.rokkstar.parser.Token.*
 
-class StatementParser: BaseParser() {
+class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParser(lastNameDelegate) {
+
+    constructor() : this(LastNameDelegate())
 
     fun parseProgram(source: TokenSource): Program {
         return Program(parseBlockStatement(source))
@@ -269,8 +271,6 @@ class StatementParser: BaseParser() {
     }
 
     private fun parseExpression(source: TokenSource): Expression {
-        val parser = ExpressionParser()
-        parser.lastName = lastName
-        return parser.parseExpression(source.filtered { it !is Space }).also { lastName = parser.lastName }
+        return ExpressionParser(lastNameDelegate).parseExpression(source.filtered { it !is Space })
     }
 }

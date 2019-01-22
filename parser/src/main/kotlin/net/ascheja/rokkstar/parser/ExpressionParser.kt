@@ -5,7 +5,9 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.expressions.BinaryOperatorExpression.Operator.*
 import net.ascheja.rokkstar.parser.Token.*
 
-class ExpressionParser: BaseParser() {
+class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate): BaseParser(lastNameDelegate) {
+
+    constructor(): this(LastNameDelegate())
 
     fun parseExpression(source: TokenSource): Expression {
         return parseLogicalExpression(source)

@@ -6,6 +6,8 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.statements.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 class StatementParserTest {
 
@@ -193,6 +195,24 @@ class StatementParserTest {
             BlockStatement(listOf(ReturnStatement(VariableExpression(Identifier("Needle")))))
         )
         assertEquals(expected, createParser().parseStatement("Search takes Needle and Haystack\nGive back Needle"))
+    }
+
+    @Test
+    fun `pronouns are substituted with last parsed variable name`() {
+        val delegate = LastNameDelegate("your heart")
+        val parser = StatementParser(delegate)
+        val expected = AssignmentStatement(
+            Identifier("my heart"),
+            VariableExpression(Identifier("your heart"))
+        )
+        assertEquals(
+            expected,
+            parser.parseStatement("Put it into my heart")
+        )
+        assertEquals(
+            "my heart",
+            delegate.value
+        )
     }
 
     private fun createParser(): StatementParser = StatementParser()
