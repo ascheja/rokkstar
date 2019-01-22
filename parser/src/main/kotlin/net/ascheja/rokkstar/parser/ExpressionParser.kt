@@ -156,7 +156,7 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
             }
         }
         if (danglingSeparator) {
-            throw ParserException("Dangling separator")
+            throw ParserException("Dangling separator${source.current.getPositionInfo()}")
         }
         return argumentTokens
     }

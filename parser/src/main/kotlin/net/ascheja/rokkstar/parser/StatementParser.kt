@@ -15,7 +15,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
 
     fun parseStatement(source: TokenSource): Statement {
         return when {
-            source.current == KW_ELSE -> throw UnexpectedTokenException("else without if")
+            source.current == KW_ELSE -> throw UnexpectedTokenException("else without if${source.current.getPositionInfo()}")
             source.matchSeq(KW_LISTEN, Space, KW_TO) -> parseListenTo(source)
             source.current == KW_IF -> parseIf(source)
             source.current in setOf(KW_SAY, KW_SCREAM, KW_SHOUT, KW_WHISPER) -> parseSay(source)

@@ -20,24 +20,30 @@ class Lexer(private val input: CharSequence) {
     }
 
     private fun tokenize() = sequence {
+        var currentLine = 1
+        var currentCharInLine = 0
         while (index < input.length) {
             val char = input[index]
+            currentCharInLine++
+            val currentPosition = Position(currentLine, currentCharInLine)
             when {
                 char in IGNORED -> {}
                 char == '(' -> {
-                    yieldAll(clearBuffer())
-                    yieldAll(finalizeBlock(')') { Comment(it) })
+                    yieldAll(clearBuffer(currentPosition))
+                    yieldAll(finalizeBlock(')') { Comment(it, currentPosition) })
                 }
                 char == '"' -> {
-                    yieldAll(clearBuffer())
-                    yieldAll(finalizeBlock('"') { StringLiteral(it) })
+                    yieldAll(clearBuffer(currentPosition))
+                    yieldAll(finalizeBlock('"') { StringLiteral(it, currentPosition) })
                 }
                 char == '\n' -> {
-                    yieldAll(clearBuffer())
+                    yieldAll(clearBuffer(currentPosition))
                     yield(Eol)
+                    currentLine++
+                    currentCharInLine = 0
                 }
                 char in WHITESPACE -> {
-                    yieldAll(clearBuffer())
+                    yieldAll(clearBuffer(currentPosition))
                     yield(Space)
                 }
                 char.isLetterOrDigit() -> {
@@ -49,20 +55,20 @@ class Lexer(private val input: CharSequence) {
                         val maybeWhitespace = input[index + 2]
                         if (maybeS == 's' && maybeWhitespace in WHITESPACE) {
                             index += 2
-                            yieldAll(clearBuffer())
+                            yieldAll(clearBuffer(currentPosition))
                             yield(Space)
-                            yield(Word("is"))
+                            yield(Word("is", currentPosition))
                         }
                     }
                 }
                 else -> {
-                    yieldAll(clearBuffer())
-                    yield(Garbage(char))
+                    yieldAll(clearBuffer(currentPosition))
+                    yield(Garbage(char, currentPosition))
                 }
             }
             index++
         }
-        yieldAll(clearBuffer())
+        yieldAll(clearBuffer(Position(currentLine, currentCharInLine)))
     }
 
     private fun finalizeBlock(until: Char, tokenGenerator: (String) -> Token) = sequence {
@@ -77,9 +83,9 @@ class Lexer(private val input: CharSequence) {
         }
     }
 
-    private fun clearBuffer() = sequence {
+    private fun clearBuffer(currentPosition: Position) = sequence {
         if (buffer != "") {
-            yield(Word(buffer))
+            yield(Word(buffer, currentPosition))
             buffer = ""
         }
     }

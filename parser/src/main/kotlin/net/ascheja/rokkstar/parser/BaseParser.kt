@@ -101,13 +101,13 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
             throw UnexpectedTokenException("expected token to be of type ${expectation.type}, found $type")
         }
         if (text.toLowerCase() != expectation.text.toLowerCase()) {
-            throw UnexpectedTokenException("expected token text '${expectation.text}', found '$text'")
+            throw UnexpectedTokenException("expected token text '${expectation.text}', found '$text'${it.getPositionInfo()}")
         }
     }
 
     private infix fun Token.mustBe(expectation: Token.Type): Token = mustBe {
         if (type != expectation) {
-            throw UnexpectedTokenException("expected token to be of type $expectation, got $type")
+            throw UnexpectedTokenException("expected token to be of type $expectation, got $type${it.getPositionInfo()}")
         }
     }
 
@@ -119,8 +119,23 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
             }
         }
         if (!found) {
-            throw UnexpectedTokenException("expected either of ${tokens.toList()}, got $it")
+            throw UnexpectedTokenException("expected either of ${tokens.toList()}, got $it${it.getPositionInfo()}")
         }
+    }
+
+    protected fun Token.getPositionInfo(): String =when (this) {
+        is Word -> position.toString()
+        is Garbage -> position.toString()
+        is StringLiteral -> position.toString()
+        is Comment -> position.toString()
+        else -> ""
+    }
+
+    private fun Position?.toString(): String {
+        if (this != null) {
+            return toString()
+        }
+        return ""
     }
 
     protected fun parseIdentifier(source: TokenSource): Identifier = Identifier(parseName(source))
