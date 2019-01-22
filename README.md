@@ -14,13 +14,13 @@ Project layout
 Using the runner
 ----------------
 ```bash
-# starts the api on port 8080
+# starts the api on port 8080 (`Listen to ...` will always receive empty strings)
 ./gradlew :runner:run --args='api 8080'
 
 # transpiles the given rockstar source code file to javascript (without type conversions)
 ./gradlew :runner:run --args='transpile:js <file>'
 
-# launches the interpreter on the given file
+# launches the interpreter on the given file (Will not work with `Listen to ...`, you have to run it manually in that case)
 ./gradlew :runner:run --args='run <file>'
 ```
 
