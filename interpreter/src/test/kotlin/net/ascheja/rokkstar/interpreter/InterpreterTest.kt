@@ -28,24 +28,24 @@ class InterpreterTest {
     fun visitBlockStatement() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            val block = BlockStatement(listOf(BreakStatement()))
+            val block = BlockStatement(BreakStatement())
             assertTrue(visitor.visitStatement(block) is Action.Break)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            val block = BlockStatement(listOf(ContinueStatement()))
+            val block = BlockStatement(ContinueStatement())
             assertTrue(visitor.visitStatement(block) is Action.Continue)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            val block = BlockStatement(listOf(ReturnStatement(NumberLiteralExpression(42.0))))
+            val block = BlockStatement(ReturnStatement(NumberLiteralExpression(42.0)))
             val action = visitor.visitStatement(block)
             assertTrue(action is Action.Return)
             assertEquals(42.0, (action as Action.Return).value.toNumber(), 0.0)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            val block = BlockStatement(listOf())
+            val block = BlockStatement()
             assertTrue(visitor.visitStatement(block) is Action.Proceed)
         }
     }
@@ -76,7 +76,7 @@ class InterpreterTest {
                 FunctionDeclaration(
                     functionName,
                     emptyList(),
-                    BlockStatement(emptyList())
+                    BlockStatement()
                 )
             )
             assertTrue(getFunction(functionName).identifier == functionName)
@@ -88,8 +88,8 @@ class InterpreterTest {
         val truthyValue = StringLiteralExpression("123")
         val falsyValue = UndefinedLiteralExpression()
 
-        val thenBlock = BlockStatement(listOf(PrintLineStatement(StringLiteralExpression("true"))))
-        val elseBlock = BlockStatement(listOf(PrintLineStatement(StringLiteralExpression("false"))))
+        val thenBlock = BlockStatement(PrintLineStatement(StringLiteralExpression("true")))
+        val elseBlock = BlockStatement(PrintLineStatement(StringLiteralExpression("false")))
 
         withContext("", createOutput { yield("true") }) {
             val visitor = Interpreter(this)
@@ -142,7 +142,7 @@ class InterpreterTest {
             visitor.visitStatement(
                 WhileLoopStatement(
                     UndefinedLiteralExpression(),
-                    BlockStatement(listOf(printBla))
+                    BlockStatement(printBla)
                 )
             )
         }
@@ -154,7 +154,7 @@ class InterpreterTest {
             visitor.visitStatement(
                 WhileLoopStatement(
                     VariableExpression(variableName),
-                    BlockStatement(listOf(DecrementStatement(variableName, 1), printBla))
+                    BlockStatement(DecrementStatement(variableName, 1), printBla)
                 )
             )
         }
@@ -173,10 +173,10 @@ class InterpreterTest {
                         VariableExpression(variable),
                         NumberLiteralExpression(2.0)
                     ),
-                    BlockStatement(listOf(
+                    BlockStatement(
                         IncrementStatement(variable, 1),
                         PrintLineStatement(StringLiteralExpression("bla"))
-                    ))
+                    )
                 )
             )
         }
@@ -234,7 +234,7 @@ class InterpreterTest {
             this[functionName] = FunctionDeclaration(
                 functionName,
                 listOf(functionParameterName),
-                BlockStatement(listOf(ReturnStatement(VariableExpression(functionParameterName))))
+                BlockStatement(ReturnStatement(VariableExpression(functionParameterName)))
             )
             val visitor = Interpreter(this)
             assertEquals(

@@ -127,8 +127,7 @@ class StatementParserTest {
                     VariableExpression(identifier),
                     NullLiteralExpression()
                 ),
-                BlockStatement(listOf(ReadLineStatement(identifier))),
-                null
+                BlockStatement(ReadLineStatement(identifier))
             ),
             createParser("If my name is nothing\nListen to my name").parseStatement()
         )
@@ -144,8 +143,8 @@ class StatementParserTest {
                     VariableExpression(identifier),
                     NullLiteralExpression()
                 ),
-                BlockStatement(listOf(ReadLineStatement(identifier))),
-                BlockStatement(listOf(PrintLineStatement(VariableExpression(identifier))))
+                BlockStatement(ReadLineStatement(identifier)),
+                BlockStatement(PrintLineStatement(VariableExpression(identifier)))
             ),
             createParser("If my name is nothing\nListen to my name\nElse\nShout my name").parseStatement()
         )
@@ -155,7 +154,7 @@ class StatementParserTest {
     fun `While statements parsed correctly`() {
         val expected = WhileLoopStatement(
             BooleanLiteralExpression(true),
-            BlockStatement(listOf(PrintLineStatement(NullLiteralExpression())))
+            BlockStatement(PrintLineStatement(NullLiteralExpression()))
         )
         assertEquals(expected, createParser("While true\nSay nothing").parseStatement())
     }
@@ -164,7 +163,7 @@ class StatementParserTest {
     fun `Until statements parsed correctly`() {
         val expected = UntilLoopStatement(
             BooleanLiteralExpression(true),
-            BlockStatement(listOf(PrintLineStatement(NullLiteralExpression())))
+            BlockStatement(PrintLineStatement(NullLiteralExpression()))
         )
         assertEquals(expected, createParser("Until true\nSay nothing").parseStatement())
     }

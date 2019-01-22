@@ -68,7 +68,7 @@ class JavascriptTranspiler: Visitor<String> {
         val conditionCheck = indent(visitIfStatement(
             IfStatement(
                 untilLoopStatement.condition,
-                BlockStatement(listOf(BreakStatement()))
+                BlockStatement(BreakStatement())
             )
         ) + "\n")
         depth--

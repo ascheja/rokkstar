@@ -21,7 +21,7 @@ class Context private constructor(
         private val UNDEFINED_FUNCTION = FunctionDeclaration(
             Identifier(""),
             listOf(),
-            BlockStatement(listOf(ReturnStatement(UndefinedLiteralExpression())))
+            BlockStatement(ReturnStatement(UndefinedLiteralExpression()))
         )
 
         fun create(input: () -> String, output: (Value) -> Unit): Context =
