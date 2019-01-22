@@ -50,6 +50,74 @@ class StatementParserTest {
     }
 
     @Test
+    fun `mysterious assignment parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("variable"),
+            UndefinedLiteralExpression()
+        )
+        assertEquals(expected, createParser("variable is mysterious").parseStatement())
+    }
+
+    @Test
+    fun `true assignment parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("variable"),
+            BooleanLiteralExpression(true)
+        )
+        for (keyword in setOf("true", "right", "yes", "ok")) {
+            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+        }
+    }
+
+    @Test
+    fun `false assignment parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("variable"),
+            BooleanLiteralExpression(false)
+        )
+        for (keyword in setOf("false", "wrong", "no", "lies")) {
+            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+        }
+    }
+
+    @Test
+    fun `null assignment parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("variable"),
+            NullLiteralExpression()
+        )
+        for (keyword in setOf("null", "nothing", "nowhere", "nobody", "empty", "gone")) {
+            assertEquals(expected, createParser("variable is $keyword").parseStatement())
+        }
+    }
+
+    @Test
+    fun `string assignment parsed correctly`() {
+        val expected = AssignmentStatement(
+            Identifier("variable"),
+            StringLiteralExpression("some text rockstar doesn't give a shit about")
+        )
+        assertEquals(
+            expected,
+            createParser("variable is \"some text rockstar doesn't give a shit about\"").parseStatement()
+        )
+    }
+
+    @Test
+    fun `number assignment parsed correctly`() {
+        for ((input, expectedValue) in listOf("2" to 2.0, "0" to 0.0, "0.273" to 0.273, "10.9" to 10.9)) {
+            val expected = AssignmentStatement(
+                Identifier("variable"),
+                NumberLiteralExpression(expectedValue)
+            )
+            assertEquals(
+                expected,
+                createParser("variable is $input").parseStatement()
+            )
+        }
+    }
+
+    @Test
     fun `If without else parsed correctly`() {
         val identifier = Identifier("my name")
         assertEquals(

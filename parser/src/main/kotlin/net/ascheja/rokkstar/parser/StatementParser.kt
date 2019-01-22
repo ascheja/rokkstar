@@ -54,7 +54,7 @@ class StatementParser(tokens: List<Token>): BaseParser(tokens.filter { it !is Co
             KW_MYSTERIOUS -> UndefinedLiteralExpression().also { next() }
             in NULL_ALIASES -> NullLiteralExpression().also { next() }
             in TRUE_ALIASES -> BooleanLiteralExpression(true).also { next() }
-            in FALSE_ALIASES -> BooleanLiteralExpression(true).also { next() }
+            in FALSE_ALIASES -> BooleanLiteralExpression(false).also { next() }
             else -> {
                 val numberAsString = if (currentToken.text.matches(NUMERIC_CHECK)) {
                     var tmp = ""

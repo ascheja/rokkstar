@@ -105,7 +105,7 @@ class ExpressionParser(tokens: List<Token>): BaseParser(tokens.filter { it !is S
             KW_MYSTERIOUS -> UndefinedLiteralExpression()
             in NULL_ALIASES -> NullLiteralExpression()
             in TRUE_ALIASES -> BooleanLiteralExpression(true)
-            in FALSE_ALIASES -> BooleanLiteralExpression(true)
+            in FALSE_ALIASES -> BooleanLiteralExpression(false)
             else -> {
                 if (currentToken.text.matches(NUMERIC_CHECK)) {
                     parseNumberExpression()
