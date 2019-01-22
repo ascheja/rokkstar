@@ -26,10 +26,15 @@ Using the runner
 
 Plans for the future
 --------------------
-- [ ] Add more tests, enable github-ci
+- [x] Add more tests, enable github-ci
 - [ ] Add position tracking for tokens
 - [ ] Improve error handling in Parser (try to recover from exceptions)
 - [ ] Rockstar plugin for IntelliJ IDEA
 - [ ] Provide a Dockerfile
 - [ ] Make Rokkstar runnable on all Kotlin platforms (jvm, javascript, kotlin-native) and/or [graal/substratevm](https://github.com/oracle/graal)
 - [ ] Use llvm (via kotlin-native) to create a real compiler
+
+Known Issues
+------------
+- More line breaks than necessary won't be parsed correctly
+- Poor error messages
