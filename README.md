@@ -1,6 +1,6 @@
 Rokkstar
 ========
-This is a WIP parser/interpreter/transpiler for the [rockstar programming language](https://github.com/dylanbeattie/rockstar),
+This is a WIP parser/interpreter/transpiler for the [rockstar programming language](https://github.com/RockstarLang/rockstar),
 written in Kotlin.
 
 Project layout
