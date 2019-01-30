@@ -9,6 +9,9 @@ application {
     mainClassName = "net.ascheja.rokkstar.runner.RokkstarKt"
 }
 
+val startScripts: CreateStartScripts by tasks
+startScripts.applicationName = "rokkstar"
+
 val ktorVersion = "1.1.1"
 
 dependencies {
