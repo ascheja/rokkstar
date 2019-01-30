@@ -13,8 +13,8 @@ Project layout
 - `interpreter` (uses `ast` and `typesystem`): interpreter that traverses the AST
 - `runner` (uses `interpreter` and `parser`): `main()` for commandline tool
 
-Using the runner
-----------------
+Using the runner via gradle
+---------------------------
 ```bash
 # starts the api on port 8080 (`Listen to ...` will always receive empty strings)
 ./gradlew :runner:run --args='api 8080'
@@ -24,6 +24,19 @@ Using the runner
 
 # launches the interpreter on the given file (Will not work with `Listen to ...`, you have to run it manually in that case)
 ./gradlew :runner:run --args='run <file>'
+```
+
+Using the runner via the Docker image
+-------------------------------------
+```bash
+# start the api on port 8080
+docker run --rm -p 8080:8080 ascheja/rokkstar api 8080
+
+# transpiles the given rockstar source code file (located in the current folder) to javascript (without type conversions)
+docker run --rm -v $(dirname $(readlink -f .)):/mnt ascheja/rokkstar transpile:js /mnt/[file]
+
+# launches the interpreter on the given file (located in the current folder)
+docker run --rm -ti -v $(dirname $(readlink -f .)):/mnt ascheja/rokkstar run /mnt/[file]
 ```
 
 Plans for the future
