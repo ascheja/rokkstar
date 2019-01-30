@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ascheja/rokkstar.svg?branch=master)](https://travis-ci.org/ascheja/rokkstar)
+
 Rokkstar
 ========
 This is a WIP parser/interpreter/transpiler for the [rockstar programming language](https://github.com/RockstarLang/rockstar),
