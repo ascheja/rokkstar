@@ -10,7 +10,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
     constructor() : this(LastNameDelegate())
 
     fun parseProgram(source: TokenSource): Program {
-        return Program(parseBlockStatement(source))
+        return Program(parseBlockStatement(source, false))
     }
 
     fun parseStatement(source: TokenSource): Statement {
@@ -191,7 +191,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         return UntilLoopStatement(condition, parseBlockStatement(source))
     }
 
-    private fun parseBlockStatement(source: TokenSource): BlockStatement {
+    private fun parseBlockStatement(source: TokenSource, breakOnEol: Boolean = true): BlockStatement {
         val statements = mutableListOf<Statement>()
         if (source.current == Eof) {
             throw UnexpectedTokenException("Found Eof at start of a block")
@@ -212,8 +212,8 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
             while (source.current is Space) {
                 source.next()
             }
-            if (source.current is Eol) {
-                break
+            while (!breakOnEol && source.current is Eol) {
+                source.next()
             }
         }
         return BlockStatement(statements)

@@ -36,5 +36,4 @@ Plans for the future
 
 Known Issues
 ------------
-- More line breaks than necessary won't be parsed correctly
 - Poor error messages
