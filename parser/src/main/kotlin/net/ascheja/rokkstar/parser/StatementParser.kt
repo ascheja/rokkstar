@@ -212,7 +212,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
             while (source.current is Space) {
                 source.next()
             }
-            if (source.current is Eol || source.current is Eof) {
+            if (source.current is Eol) {
                 break
             }
         }
