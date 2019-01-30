@@ -30,7 +30,7 @@ Plans for the future
 - [x] Add position tracking for tokens
 - [ ] Improve error handling in Parser (try to recover from exceptions)
 - [ ] Rockstar plugin for IntelliJ IDEA
-- [ ] Provide a Dockerfile
+- [x] Provide a Docker image
 - [ ] Make Rokkstar runnable on all Kotlin platforms (jvm, javascript, kotlin-native) and/or [graal/substratevm](https://github.com/oracle/graal)
 - [ ] Use llvm (via kotlin-native) to create a real compiler
 
