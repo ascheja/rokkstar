@@ -188,23 +188,23 @@ class Interpreter(private val context: Context): Visitor<Action> {
         return Action.Return(result)
     }
 
-    override fun visitNumberLiteralExpression(numberLiteralExpression: NumberLiteralExpression): Action.Return {
-        return Action.Return(NumberValue(numberLiteralExpression.value))
+    override fun visitNumberConstant(numberConstant: NumberConstant): Action.Return {
+        return Action.Return(NumberValue(numberConstant.value))
     }
 
-    override fun visitStringLiteralExpression(stringLiteralExpression: StringLiteralExpression): Action.Return {
-        return Action.Return(StringValue(stringLiteralExpression.value))
+    override fun visitStringConstant(stringConstant: StringConstant): Action.Return {
+        return Action.Return(StringValue(stringConstant.value))
     }
 
-    override fun visitBooleanLiteralExpression(booleanLiteralExpression: BooleanLiteralExpression): Action.Return {
-        return Action.Return(BooleanValue(booleanLiteralExpression.value))
+    override fun visitBooleanConstant(booleanConstant: BooleanConstant): Action.Return {
+        return Action.Return(BooleanValue(booleanConstant.value))
     }
 
-    override fun visitNullLiteralExpression(nullLiteralExpression: NullLiteralExpression): Action.Return {
+    override fun visitNullConstant(nullConstant: NullConstant): Action.Return {
         return Action.Return(NullValue.INSTANCE)
     }
 
-    override fun visitUndefinedLiteralExpression(undefinedLiteralExpression: UndefinedLiteralExpression): Action.Return {
+    override fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): Action.Return {
         return Action.Return(UndefinedValue.INSTANCE)
     }
 

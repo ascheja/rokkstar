@@ -51,7 +51,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         source.current mustBe KW_SAYS
         source.next() mustBe Space
         source.next()
-        return AssignmentStatement(identifier, StringLiteralExpression(source.skipToNextEolOrEof().joinToString("") { it.text}))
+        return AssignmentStatement(identifier, StringConstant(source.skipToNextEolOrEof().joinToString("") { it.text}))
     }
 
     private fun parseLiteralAssignment(identifier: Identifier, source: TokenSource): Statement {
@@ -59,11 +59,11 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         source.next() mustBe Space
         source.next()
         val value = when (source.current) {
-            is StringLiteral -> StringLiteralExpression(source.current.text).also { source.next() }
-            KW_MYSTERIOUS -> UndefinedLiteralExpression().also { source.next() }
-            in NULL_ALIASES -> NullLiteralExpression().also { source.next() }
-            in TRUE_ALIASES -> BooleanLiteralExpression(true).also { source.next() }
-            in FALSE_ALIASES -> BooleanLiteralExpression(false).also { source.next() }
+            is StringLiteral -> StringConstant(source.current.text).also { source.next() }
+            KW_MYSTERIOUS -> UndefinedConstant().also { source.next() }
+            in NULL_ALIASES -> NullConstant().also { source.next() }
+            in TRUE_ALIASES -> BooleanConstant(true).also { source.next() }
+            in FALSE_ALIASES -> BooleanConstant(false).also { source.next() }
             else -> {
                 val numberAsString = if (source.current.text.matches(NUMERIC_CHECK)) {
                     var tmp = ""
@@ -90,7 +90,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
                     }
                     tmp
                 }
-                NumberLiteralExpression(numberAsString.trimEnd('.').toDouble())
+                NumberConstant(numberAsString.trimEnd('.').toDouble())
             }
         }
         source.current mustBe any(Eol, Eof)

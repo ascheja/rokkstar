@@ -114,23 +114,23 @@ class JavascriptTranspiler: Visitor<String> {
         return "!" + visitExpression(unaryOperatorExpression.expression)
     }
 
-    override fun visitNumberLiteralExpression(numberLiteralExpression: NumberLiteralExpression): String {
-        return numberLiteralExpression.value.toString()
+    override fun visitNumberConstant(numberConstant: NumberConstant): String {
+        return numberConstant.value.toString()
     }
 
-    override fun visitStringLiteralExpression(stringLiteralExpression: StringLiteralExpression): String {
-        return "\"${stringLiteralExpression.value}\""
+    override fun visitStringConstant(stringConstant: StringConstant): String {
+        return "\"${stringConstant.value}\""
     }
 
-    override fun visitBooleanLiteralExpression(booleanLiteralExpression: BooleanLiteralExpression): String {
-        return booleanLiteralExpression.value.toString()
+    override fun visitBooleanConstant(booleanConstant: BooleanConstant): String {
+        return booleanConstant.value.toString()
     }
 
-    override fun visitNullLiteralExpression(nullLiteralExpression: NullLiteralExpression): String {
+    override fun visitNullConstant(nullConstant: NullConstant): String {
         return "null"
     }
 
-    override fun visitUndefinedLiteralExpression(undefinedLiteralExpression: UndefinedLiteralExpression): String {
+    override fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): String {
         return "undefined"
     }
 

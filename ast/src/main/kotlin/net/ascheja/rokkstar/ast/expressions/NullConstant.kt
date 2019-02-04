@@ -2,11 +2,11 @@ package net.ascheja.rokkstar.ast.expressions
 
 import net.ascheja.rokkstar.ast.Expression
 
-class NullLiteralExpression: Expression {
-    override fun toString(): String = "NullLiteralExpression()"
+class NullConstant: Expression {
+    override fun toString(): String = "NullConstant()"
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is NullLiteralExpression) return false
+        if (other !is NullConstant) return false
         return true
     }
 

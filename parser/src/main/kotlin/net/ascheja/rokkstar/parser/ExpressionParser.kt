@@ -102,11 +102,11 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
 
     private fun parsePrimaryExpression(source: TokenSource): Expression {
         return when (source.current) {
-            is StringLiteral -> StringLiteralExpression(source.current.text)
-            KW_MYSTERIOUS -> UndefinedLiteralExpression()
-            in NULL_ALIASES -> NullLiteralExpression()
-            in TRUE_ALIASES -> BooleanLiteralExpression(true)
-            in FALSE_ALIASES -> BooleanLiteralExpression(false)
+            is StringLiteral -> StringConstant(source.current.text)
+            KW_MYSTERIOUS -> UndefinedConstant()
+            in NULL_ALIASES -> NullConstant()
+            in TRUE_ALIASES -> BooleanConstant(true)
+            in FALSE_ALIASES -> BooleanConstant(false)
             else -> {
                 if (source.current.text.matches(NUMERIC_CHECK)) {
                     parseNumberExpression(source)
@@ -116,7 +116,7 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
 
             }
         }.also {
-            if (it !is VariableExpression && it !is NumberLiteralExpression) {
+            if (it !is VariableExpression && it !is NumberConstant) {
                 source.next()
             }
         }
@@ -128,7 +128,7 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
             tmp += source.current.text
             source.next()
         }
-        return NumberLiteralExpression(tmp.toDouble())
+        return NumberConstant(tmp.toDouble())
     }
 
     private fun extractArguments(source: TokenSource): List<TokenSource> {

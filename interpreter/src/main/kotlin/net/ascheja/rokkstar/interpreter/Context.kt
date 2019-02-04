@@ -1,7 +1,7 @@
 package net.ascheja.rokkstar.interpreter
 
 import net.ascheja.rokkstar.ast.Identifier
-import net.ascheja.rokkstar.ast.expressions.UndefinedLiteralExpression
+import net.ascheja.rokkstar.ast.expressions.UndefinedConstant
 import net.ascheja.rokkstar.ast.statements.BlockStatement
 import net.ascheja.rokkstar.ast.statements.FunctionDeclaration
 import net.ascheja.rokkstar.ast.statements.ReturnStatement
@@ -21,7 +21,7 @@ class Context private constructor(
         private val UNDEFINED_FUNCTION = FunctionDeclaration(
             Identifier(""),
             listOf(),
-            BlockStatement(ReturnStatement(UndefinedLiteralExpression()))
+            BlockStatement(ReturnStatement(UndefinedConstant()))
         )
 
         fun create(input: () -> String, output: (Value) -> Unit): Context =

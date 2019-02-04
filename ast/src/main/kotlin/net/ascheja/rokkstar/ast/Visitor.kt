@@ -54,11 +54,11 @@ interface Visitor<T> {
         is BinaryOperatorExpression -> visitBinaryOperatorExpression(expression)
         is UnaryOperatorExpression -> visitUnaryOperatorExpression(expression)
         is FunctionCallExpression -> visitFunctionCallExpression(expression)
-        is NumberLiteralExpression -> visitNumberLiteralExpression(expression)
-        is StringLiteralExpression -> visitStringLiteralExpression(expression)
-        is BooleanLiteralExpression -> visitBooleanLiteralExpression(expression)
-        is NullLiteralExpression -> visitNullLiteralExpression(expression)
-        is UndefinedLiteralExpression -> visitUndefinedLiteralExpression(expression)
+        is NumberConstant -> visitNumberConstant(expression)
+        is StringConstant -> visitStringConstant(expression)
+        is BooleanConstant -> visitBooleanConstant(expression)
+        is NullConstant -> visitNullConstant(expression)
+        is UndefinedConstant -> visitUndefinedConstant(expression)
         is VariableExpression -> visitVariableExpression(expression)
         else -> throw IllegalArgumentException("Unknown type of expression: ${expression.javaClass}")
     }
@@ -69,15 +69,15 @@ interface Visitor<T> {
 
     fun visitUnaryOperatorExpression(unaryOperatorExpression: UnaryOperatorExpression): T
 
-    fun visitNumberLiteralExpression(numberLiteralExpression: NumberLiteralExpression): T
+    fun visitNumberConstant(numberConstant: NumberConstant): T
 
-    fun visitStringLiteralExpression(stringLiteralExpression: StringLiteralExpression): T
+    fun visitStringConstant(stringConstant: StringConstant): T
 
-    fun visitBooleanLiteralExpression(booleanLiteralExpression: BooleanLiteralExpression): T
+    fun visitBooleanConstant(booleanConstant: BooleanConstant): T
 
-    fun visitNullLiteralExpression(nullLiteralExpression: NullLiteralExpression): T
+    fun visitNullConstant(nullConstant: NullConstant): T
 
-    fun visitUndefinedLiteralExpression(undefinedLiteralExpression: UndefinedLiteralExpression): T
+    fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): T
 
     fun visitVariableExpression(variableExpression: VariableExpression): T
 }

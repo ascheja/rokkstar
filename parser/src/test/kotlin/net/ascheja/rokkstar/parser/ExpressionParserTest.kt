@@ -13,7 +13,7 @@ class ExpressionParserTest {
     @Test
     fun `mysterious assignment parsed correctly`() {
         assertEquals(
-            UndefinedLiteralExpression(),
+            UndefinedConstant(),
             createParser().parseExpression("mysterious")
         )
     }
@@ -22,7 +22,7 @@ class ExpressionParserTest {
     fun `true assignment parsed correctly`() {
         for (keyword in setOf("true", "right", "yes", "ok")) {
             assertEquals(
-                BooleanLiteralExpression(true),
+                BooleanConstant(true),
                 createParser().parseExpression(keyword)
             )
         }
@@ -32,7 +32,7 @@ class ExpressionParserTest {
     fun `false assignment parsed correctly`() {
         for (keyword in setOf("false", "wrong", "no", "lies")) {
             assertEquals(
-                BooleanLiteralExpression(false),
+                BooleanConstant(false),
                 createParser().parseExpression(keyword)
             )
         }
@@ -41,14 +41,14 @@ class ExpressionParserTest {
     @Test
     fun `null assignment parsed correctly`() {
         for (keyword in setOf("null", "nothing", "nowhere", "nobody", "empty", "gone")) {
-            assertEquals(NullLiteralExpression(), createParser().parseExpression(keyword))
+            assertEquals(NullConstant(), createParser().parseExpression(keyword))
         }
     }
 
     @Test
     fun `string assignment parsed correctly`() {
         assertEquals(
-            StringLiteralExpression("some text rockstar doesn't give a shit about"),
+            StringConstant("some text rockstar doesn't give a shit about"),
             createParser().parseExpression("\"some text rockstar doesn't give a shit about\"")
         )
     }
@@ -57,7 +57,7 @@ class ExpressionParserTest {
     fun `number assignment parsed correctly`() {
         for ((input, expectedValue) in listOf("2" to 2.0, "0" to 0.0, "0.273" to 0.273, "10.9" to 10.9)) {
             assertEquals(
-                NumberLiteralExpression(expectedValue),
+                NumberConstant(expectedValue),
                 createParser().parseExpression(input)
             )
         }
@@ -67,8 +67,8 @@ class ExpressionParserTest {
     fun `and parsed correctly`() {
         val expected = BinaryOperatorExpression(
             AND,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -80,8 +80,8 @@ class ExpressionParserTest {
     fun `or parsed correctly`() {
         val expected = BinaryOperatorExpression(
             OR,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -93,8 +93,8 @@ class ExpressionParserTest {
     fun `nor parsed correctly`() {
         val expected = BinaryOperatorExpression(
             NOR,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -106,8 +106,8 @@ class ExpressionParserTest {
     fun `equal parsed correctly`() {
         val expected = BinaryOperatorExpression(
             EQUALS,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -119,8 +119,8 @@ class ExpressionParserTest {
     fun `not equal parsed correctly`() {
         val expected = BinaryOperatorExpression(
             NOT_EQUALS,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("ain't", "isn't")) {
             assertEquals(
@@ -134,8 +134,8 @@ class ExpressionParserTest {
     fun `greater parsed correctly`() {
         val expected = BinaryOperatorExpression(
             GREATER,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("higher", "bigger", "greater", "stronger")) {
             assertEquals(
@@ -149,8 +149,8 @@ class ExpressionParserTest {
     fun `greater equals parsed correctly`() {
         val expected = BinaryOperatorExpression(
             GREATER_EQUALS,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("high", "big", "great", "strong")) {
             assertEquals(
@@ -164,8 +164,8 @@ class ExpressionParserTest {
     fun `less parsed correctly`() {
         val expected = BinaryOperatorExpression(
             LESS,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("less", "lower", "smaller", "weaker")) {
             assertEquals(
@@ -179,8 +179,8 @@ class ExpressionParserTest {
     fun `less equals parsed correctly`() {
         val expected = BinaryOperatorExpression(
             LESS_EQUALS,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("low", "little", "small", "weak")) {
             assertEquals(
@@ -194,8 +194,8 @@ class ExpressionParserTest {
     fun `plus,with parsed correctly`() {
         val expected = BinaryOperatorExpression(
             ADD,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("plus", "with")) {
             assertEquals(
@@ -209,8 +209,8 @@ class ExpressionParserTest {
     fun `minus,without parsed correctly`() {
         val expected = BinaryOperatorExpression(
             SUBTRACT,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("minus", "without")) {
             assertEquals(
@@ -224,8 +224,8 @@ class ExpressionParserTest {
     fun `times,of parsed correctly`() {
         val expected = BinaryOperatorExpression(
             MULTIPLY,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         for (keyword in setOf("times", "of")) {
             assertEquals(
@@ -239,8 +239,8 @@ class ExpressionParserTest {
     fun `over parsed correctly`() {
         val expected = BinaryOperatorExpression(
             DIVIDE,
-            BooleanLiteralExpression(true),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true),
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -252,7 +252,7 @@ class ExpressionParserTest {
     fun `not parsed correctly`() {
         val expected = UnaryOperatorExpression(
             UnaryOperatorExpression.Operator.NOT,
-            BooleanLiteralExpression(true)
+            BooleanConstant(true)
         )
         assertEquals(
             expected,
@@ -276,8 +276,8 @@ class ExpressionParserTest {
                 VariableExpression(Identifier("my variable")),
                 VariableExpression(Identifier("Rock")),
                 VariableExpression(Identifier("Roll")),
-                NumberLiteralExpression(666.0),
-                StringLiteralExpression("Joy"),
+                NumberConstant(666.0),
+                StringConstant("Joy"),
                 VariableExpression(Identifier("Happiness"))
             )
         )

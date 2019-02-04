@@ -6,8 +6,6 @@ import net.ascheja.rokkstar.ast.expressions.*
 import net.ascheja.rokkstar.ast.statements.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.properties.Delegates
-import kotlin.reflect.KProperty
 
 class StatementParserTest {
 
@@ -39,7 +37,7 @@ class StatementParserTest {
     @Test
     fun `Poetic string literal assignment parsed correctly`() {
         assertEquals(
-            AssignmentStatement(Identifier("Your heart"), StringLiteralExpression(";!bla bla???<>")),
+            AssignmentStatement(Identifier("Your heart"), StringConstant(";!bla bla???<>")),
             createParser().parseStatement("Your heart says ;!bla bla???<>")
         )
     }
@@ -47,7 +45,7 @@ class StatementParserTest {
     @Test
     fun `Poetic number literal assignment parsed correctly`() {
         assertEquals(
-            AssignmentStatement(Identifier("Tommy"), NumberLiteralExpression(14487.0)),
+            AssignmentStatement(Identifier("Tommy"), NumberConstant(14487.0)),
             createParser().parseStatement("Tommy was a lean, mean wrecking machine.")
         )
     }
@@ -56,7 +54,7 @@ class StatementParserTest {
     fun `mysterious assignment parsed correctly`() {
         val expected = AssignmentStatement(
             Identifier("variable"),
-            UndefinedLiteralExpression()
+            UndefinedConstant()
         )
         assertEquals(expected, createParser().parseStatement("variable is mysterious"))
     }
@@ -65,7 +63,7 @@ class StatementParserTest {
     fun `true assignment parsed correctly`() {
         val expected = AssignmentStatement(
             Identifier("variable"),
-            BooleanLiteralExpression(true)
+            BooleanConstant(true)
         )
         for (keyword in setOf("true", "right", "yes", "ok")) {
             assertEquals(expected, createParser().parseStatement("variable is $keyword"))
@@ -76,7 +74,7 @@ class StatementParserTest {
     fun `false assignment parsed correctly`() {
         val expected = AssignmentStatement(
             Identifier("variable"),
-            BooleanLiteralExpression(false)
+            BooleanConstant(false)
         )
         for (keyword in setOf("false", "wrong", "no", "lies")) {
             assertEquals(expected, createParser().parseStatement("variable is $keyword"))
@@ -87,7 +85,7 @@ class StatementParserTest {
     fun `null assignment parsed correctly`() {
         val expected = AssignmentStatement(
             Identifier("variable"),
-            NullLiteralExpression()
+            NullConstant()
         )
         for (keyword in setOf("null", "nothing", "nowhere", "nobody", "empty", "gone")) {
             assertEquals(expected, createParser().parseStatement("variable is $keyword"))
@@ -98,7 +96,7 @@ class StatementParserTest {
     fun `string assignment parsed correctly`() {
         val expected = AssignmentStatement(
             Identifier("variable"),
-            StringLiteralExpression("some text rockstar doesn't give a shit about")
+            StringConstant("some text rockstar doesn't give a shit about")
         )
         assertEquals(
             expected,
@@ -111,7 +109,7 @@ class StatementParserTest {
         for ((input, expectedValue) in listOf("2" to 2.0, "0" to 0.0, "0.273" to 0.273, "10.9" to 10.9)) {
             val expected = AssignmentStatement(
                 Identifier("variable"),
-                NumberLiteralExpression(expectedValue)
+                NumberConstant(expectedValue)
             )
             assertEquals(
                 expected,
@@ -128,7 +126,7 @@ class StatementParserTest {
                 BinaryOperatorExpression(
                     BinaryOperatorExpression.Operator.EQUALS,
                     VariableExpression(identifier),
-                    NullLiteralExpression()
+                    NullConstant()
                 ),
                 BlockStatement(ReadLineStatement(identifier))
             ),
@@ -144,7 +142,7 @@ class StatementParserTest {
                 BinaryOperatorExpression(
                     BinaryOperatorExpression.Operator.EQUALS,
                     VariableExpression(identifier),
-                    NullLiteralExpression()
+                    NullConstant()
                 ),
                 BlockStatement(ReadLineStatement(identifier)),
                 BlockStatement(PrintLineStatement(VariableExpression(identifier)))
@@ -156,8 +154,8 @@ class StatementParserTest {
     @Test
     fun `While statements parsed correctly`() {
         val expected = WhileLoopStatement(
-            BooleanLiteralExpression(true),
-            BlockStatement(PrintLineStatement(NullLiteralExpression()))
+            BooleanConstant(true),
+            BlockStatement(PrintLineStatement(NullConstant()))
         )
         assertEquals(expected, createParser().parseStatement("While true\nSay nothing"))
     }
@@ -165,8 +163,8 @@ class StatementParserTest {
     @Test
     fun `Until statements parsed correctly`() {
         val expected = UntilLoopStatement(
-            BooleanLiteralExpression(true),
-            BlockStatement(PrintLineStatement(NullLiteralExpression()))
+            BooleanConstant(true),
+            BlockStatement(PrintLineStatement(NullConstant()))
         )
         assertEquals(expected, createParser().parseStatement("Until true\nSay nothing"))
     }
@@ -178,9 +176,9 @@ class StatementParserTest {
             FunctionCallExpression(
                 Identifier("Multiply"),
                 listOf(
-                    NumberLiteralExpression(3.0),
-                    NumberLiteralExpression(5.0),
-                    NumberLiteralExpression(9.0)
+                    NumberConstant(3.0),
+                    NumberConstant(5.0),
+                    NumberConstant(9.0)
                 )
             )
         )
