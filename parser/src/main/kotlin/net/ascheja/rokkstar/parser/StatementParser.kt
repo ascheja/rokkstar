@@ -208,7 +208,10 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
             while (source.current !is Word && source.current !is Eol) {
                 source.next()
             }
-            if (source.current is Eof || source.current is Eol) {
+            while (!breakOnEol && source.current is Eol) {
+                source.next()
+            }
+            if (source.current is Eof || (breakOnEol && source.current is Eol)) {
                 break
             }
             statements.add(parseStatement(source))
