@@ -30,11 +30,16 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
             source.current == KW_KNOCK -> parseDecrement(source)
             source.matchSeq(KW_GIVE, Space, KW_BACK) -> parseReturn(source)
             else -> {
+                val currentPosition = source.index
                 val identifier = parseIdentifier(source)
                 source.skipToNextWordIfNecessary()
                 when (source.current) {
                     KW_IS, KW_WAS, KW_WERE -> parseLiteralAssignment(identifier, source)
                     KW_TAKES -> parseFunctionDeclaration(identifier, source)
+                    KW_TAKING -> {
+                        source.skipToNextEolOrEof()
+                        parseExpression(source.subList(currentPosition, source.index))
+                    }
                     KW_SAYS -> parsePoeticStringLiteralAssignment(identifier, source)
                     else -> throw UnexpectedTokenException(source.current.text)
                 }
