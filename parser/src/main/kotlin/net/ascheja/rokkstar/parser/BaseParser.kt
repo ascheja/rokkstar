@@ -153,7 +153,7 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
                 source.next()
             }
             source.next() mustBe Type.WORD
-            prefix + " " + source.current.text
+            (prefix + " " + source.current.text).also { if (source.lookahead(1) is Space) source.next() }
         } else {
             //proper variable
             var temp = source.current.text
