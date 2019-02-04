@@ -133,5 +133,18 @@ class LexerTest {
         )
     }
 
+    @Test
+    fun `escape chars are replaced in string literal`() {
+        assertEquals("\n", tokenize(""""\n"""")[0].text)
+        assertEquals("\r", tokenize(""""\r"""")[0].text)
+        assertEquals("\t", tokenize(""""\t"""")[0].text)
+        assertEquals("\\", tokenize(""""\\"""")[0].text)
+    }
+
+    @Test
+    fun `escape chars with leading backslash are not replaced in string literal`() {
+        assertEquals("\\n", tokenize(""""\\n"""")[0].text)
+    }
+
     private fun tokenize(text: String): List<Token> = Lexer(text).tokens
 }

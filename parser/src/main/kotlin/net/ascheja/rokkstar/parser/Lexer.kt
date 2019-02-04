@@ -34,7 +34,7 @@ class Lexer(private val input: CharSequence) {
                 }
                 char == '"' -> {
                     yieldAll(clearBuffer(currentPosition))
-                    yieldAll(finalizeBlock('"') { StringLiteral(it, currentPosition) })
+                    yieldAll(finalizeBlock('"') { StringLiteral(replaceEscapeChars(it), currentPosition) })
                 }
                 char == '\n' -> {
                     yieldAll(clearBuffer(currentPosition))
@@ -87,6 +87,18 @@ class Lexer(private val input: CharSequence) {
         if (buffer != "") {
             yield(Word(buffer, currentPosition))
             buffer = ""
+        }
+    }
+
+    private fun replaceEscapeChars(string: String): String {
+        return string.replace(Regex("""\\[\\nrt]""")) {
+            when (it.value) {
+                "\\\\" -> "\\"
+                "\\n" -> "\n"
+                "\\r" -> "\r"
+                "\\t" -> "\t"
+                else -> ""
+            }
         }
     }
 }
