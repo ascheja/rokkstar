@@ -24,6 +24,13 @@ class ProgramTest {
         assertEquals(expectedOutput, execute(content))
     }
 
+    @Test
+    fun `99 bottles of beer executed correctly`() {
+        val content = readFile("99-bottles-of-beer.rock")
+        val expectedOutput = readFile("99-bottles-of-beer.rock.out")
+        assertEquals(expectedOutput, execute(content))
+    }
+
     private fun readFile(filename: String): String {
         return File(javaClass.classLoader.getResource(filename).toURI()).readText()
     }
