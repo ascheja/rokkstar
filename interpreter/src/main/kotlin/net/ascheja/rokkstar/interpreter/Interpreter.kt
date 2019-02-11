@@ -201,7 +201,7 @@ class Interpreter(private val context: Context): Visitor<Action> {
     }
 
     override fun visitNullConstant(nullConstant: NullConstant): Action.Return {
-        return Action.Return(NullValue.INSTANCE)
+        return Action.Return(NullValue)
     }
 
     override fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): Action.Return {

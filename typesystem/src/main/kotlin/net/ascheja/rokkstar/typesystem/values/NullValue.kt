@@ -3,7 +3,7 @@ package net.ascheja.rokkstar.typesystem.values
 import net.ascheja.rokkstar.typesystem.UndefinedBehaviorException
 import net.ascheja.rokkstar.typesystem.Value
 
-class NullValue private constructor(): Value {
+object NullValue: Value {
     override fun toBoolean(): Boolean = false
 
     override fun toNumber(): Double = 0.0
@@ -36,10 +36,6 @@ class NullValue private constructor(): Value {
         is NullValue -> 0
         is NumberValue -> 0.0.compareTo(other.value)
         else -> -1
-    }
-
-    companion object {
-        val INSTANCE = NullValue()
     }
 
     override fun toString(): String = "null"

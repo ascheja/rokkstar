@@ -14,10 +14,10 @@ class NumberValueTest: ValueTest() {
             { NumberValue(1.0) + StringValue("2") } shouldSucceedWith StringValue("12"),
             { NumberValue(2.0) * StringValue("3") } shouldSucceedWith StringValue("33"),
 
-            { NumberValue(1.0) + NullValue.INSTANCE } shouldSucceedWith NumberValue(1.0),
-            { NumberValue(3.0) - NullValue.INSTANCE } shouldSucceedWith NumberValue(3.0),
-            { NumberValue(2.0) * NullValue.INSTANCE } shouldSucceedWith NumberValue(0.0),
-            { NumberValue(10.0) / NullValue.INSTANCE } shouldSucceedWith UndefinedValue.INSTANCE,
+            { NumberValue(1.0) + NullValue } shouldSucceedWith NumberValue(1.0),
+            { NumberValue(3.0) - NullValue } shouldSucceedWith NumberValue(3.0),
+            { NumberValue(2.0) * NullValue } shouldSucceedWith NumberValue(0.0),
+            { NumberValue(10.0) / NullValue } shouldSucceedWith UndefinedValue.INSTANCE,
 
             { NumberValue(1.0).inc() } shouldSucceedWith NumberValue(2.0),
             { NumberValue(1.0).dec() } shouldSucceedWith NumberValue(0.0)

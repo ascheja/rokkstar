@@ -11,10 +11,10 @@ class UndefinedValueTest: ValueTest() {
             { UndefinedValue.INSTANCE * UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
             { UndefinedValue.INSTANCE / UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE + NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
-            { UndefinedValue.INSTANCE - NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue.INSTANCE + NullValue } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
+            { UndefinedValue.INSTANCE - NullValue } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue.INSTANCE * NullValue } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue.INSTANCE / NullValue } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
             { UndefinedValue.INSTANCE + StringValue(" world") } shouldSucceedWith StringValue("mysterious world"),
             { UndefinedValue.INSTANCE - StringValue("") } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),

@@ -22,10 +22,10 @@ class StringValueTest: ValueTest() {
             { StringValue("some") * BooleanValue(false) } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
             { StringValue("some") / BooleanValue(false) } shouldFailWith UndefinedBehaviorException("/ not defined for strings"),
 
-            { StringValue("Not ") + NullValue.INSTANCE } shouldSucceedWith StringValue("Not null"),
-            { StringValue("some") - NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for strings"),
-            { StringValue("some") * NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
-            { StringValue("some") / NullValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for strings"),
+            { StringValue("Not ") + NullValue } shouldSucceedWith StringValue("Not null"),
+            { StringValue("some") - NullValue } shouldFailWith UndefinedBehaviorException("- not defined for strings"),
+            { StringValue("some") * NullValue } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
+            { StringValue("some") / NullValue } shouldFailWith UndefinedBehaviorException("/ not defined for strings"),
 
             { StringValue("Not ") + UndefinedValue.INSTANCE } shouldSucceedWith StringValue("Not mysterious"),
             { StringValue("some") - UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for strings"),

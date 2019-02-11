@@ -303,7 +303,7 @@ class InterpreterTest {
     fun visitNullLiteralExpression() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertSame(NullValue.INSTANCE, visitor.visitExpression(NullConstant()).value)
+            assertSame(NullValue, visitor.visitExpression(NullConstant()).value)
         }
     }
 
