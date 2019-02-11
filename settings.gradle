@@ -1,6 +1,0 @@
-rootProject.name = "rokkstar"
-include ":typesystem"
-include ":ast"
-include ":interpreter"
-include ":parser"
-include ":runner"
