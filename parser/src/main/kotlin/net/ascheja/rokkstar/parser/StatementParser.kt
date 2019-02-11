@@ -267,9 +267,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         while (source.current != Eof) {
             if (source.current in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol)) {
                 argumentTokens.add(source.subList(start, source.index))
-                if (source.current == COMMA && source.lookahead(1) == KW_AND) {
-                    source.next()
-                }
+                source.matchSeq(COMMA, Space, KW_AND) || source.matchSeq(COMMA, KW_AND)
                 if (source.current == Eol) {
                     break
                 }

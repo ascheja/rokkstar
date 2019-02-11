@@ -31,6 +31,20 @@ class ProgramTest {
         assertEquals(expectedOutput, execute(content))
     }
 
+    @Test
+    fun `nested function scopes`() {
+        val content = readFile("nested_function_scopes.rock")
+        val expectedOutput = readFile("nested_function_scopes.rock.out")
+        assertEquals(expectedOutput, execute(content))
+    }
+
+    @Test
+    fun `nested functions`() {
+        val content = readFile("nested_functions.rock")
+        val expectedOutput = readFile("nested_functions.rock.out")
+        assertEquals(expectedOutput, execute(content))
+    }
+
     private fun readFile(filename: String): String {
         return File(javaClass.classLoader.getResource(filename).toURI()).readText()
     }
