@@ -11,14 +11,14 @@ import java.io.File
 class ProgramTest {
 
     @Test
-    fun `easy fizz-buzz parsed without problems`() {
+    fun `easy fizz-buzz executed correctly`() {
         val content = readFile("fizzbuzz-easy.rock")
         val expectedOutput = readFile("fizzbuzz.rock.out")
         assertEquals(expectedOutput, execute(content))
     }
 
     @Test
-    fun `hard fizz-buzz parsed without problems`() {
+    fun `hard fizz-buzz executed correctly`() {
         val content = readFile("fizzbuzz-hard.rock")
         val expectedOutput = readFile("fizzbuzz.rock.out")
         assertEquals(expectedOutput, execute(content))
