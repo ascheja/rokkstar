@@ -1,4 +1,4 @@
-package net.ascheja.rokkstar.runner
+package net.ascheja.rokkstar
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import net.ascheja.rokkstar.ast.Program
@@ -34,7 +34,10 @@ fun main(args: Array<String>) {
         "transpile:js" -> transpileJs(parseProgram(File(args[1])))
         "run" -> {
             System.`in`.bufferedReader().use { inputReader ->
-                runProgram(parseProgram(File(args[1])), { inputReader.readLine() ?: "" }, { println(it) })
+                runProgram(
+                    parseProgram(File(args[1])),
+                    { inputReader.readLine() ?: "" },
+                    { println(it) })
             }
         }
         "api" -> runApi(args[1].toInt())
@@ -77,7 +80,9 @@ fun runApi(port: Int) {
                     errors.add("timeout reached")
                     false
                 }
-                call.respond(if (success) HttpStatusCode.OK else HttpStatusCode.BadRequest, RunResult(output, errors))
+                call.respond(if (success) HttpStatusCode.OK else HttpStatusCode.BadRequest,
+                    RunResult(output, errors)
+                )
             }
 
             post("/transpile/js") {
@@ -101,7 +106,9 @@ fun runApi(port: Int) {
                     errors.add("timeout reached")
                     null
                 }
-                call.respond(if (transpiled != null) HttpStatusCode.OK else HttpStatusCode.BadRequest, TranspileResult(transpiled, errors))
+                call.respond(if (transpiled != null) HttpStatusCode.OK else HttpStatusCode.BadRequest,
+                    TranspileResult(transpiled, errors)
+                )
             }
         }
     }.start(wait = true)

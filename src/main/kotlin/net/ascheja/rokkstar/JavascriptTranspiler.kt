@@ -1,4 +1,4 @@
-package net.ascheja.rokkstar.runner
+package net.ascheja.rokkstar
 
 import net.ascheja.rokkstar.ast.Identifier
 import net.ascheja.rokkstar.ast.Visitor

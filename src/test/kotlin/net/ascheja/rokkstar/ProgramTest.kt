@@ -1,4 +1,4 @@
-package net.ascheja.rokkstar.runner
+package net.ascheja.rokkstar
 
 import net.ascheja.rokkstar.interpreter.Context
 import net.ascheja.rokkstar.interpreter.Interpreter

@@ -11,19 +11,18 @@ Project layout
 - `typesystem`: logic rockstar's dynamic types
 - `parser` (uses `ast`): parser (and lexer) for building up an AST from source code
 - `interpreter` (uses `ast` and `typesystem`): interpreter that traverses the AST
-- `runner` (uses `interpreter` and `parser`): `main()` for commandline tool
 
 Using the runner via gradle
 ---------------------------
 ```bash
 # starts the api on port 8080 (`Listen to ...` will always receive empty strings)
-./gradlew :runner:run --args='api 8080'
+./gradlew run --args='api 8080'
 
 # transpiles the given rockstar source code file to javascript (without type conversions)
-./gradlew :runner:run --args='transpile:js <file>'
+./gradlew run --args='transpile:js <file>'
 
 # launches the interpreter on the given file (Will not work with `Listen to ...`, you have to run it manually in that case)
-./gradlew :runner:run --args='run <file>'
+./gradlew run --args='run <file>'
 ```
 
 Using the runner via the Docker image

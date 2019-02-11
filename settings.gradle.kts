@@ -1,2 +1,2 @@
 rootProject.name = "rokkstar"
-include("typesystem", "ast", "interpreter", "parser", "runner")
+include("typesystem", "ast", "interpreter", "parser")
