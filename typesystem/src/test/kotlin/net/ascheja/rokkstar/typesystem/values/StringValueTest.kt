@@ -27,10 +27,10 @@ class StringValueTest: ValueTest() {
             { StringValue("some") * NullValue } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
             { StringValue("some") / NullValue } shouldFailWith UndefinedBehaviorException("/ not defined for strings"),
 
-            { StringValue("Not ") + UndefinedValue.INSTANCE } shouldSucceedWith StringValue("Not mysterious"),
-            { StringValue("some") - UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for strings"),
-            { StringValue("some") * UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
-            { StringValue("some") / UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for strings")
+            { StringValue("Not ") + UndefinedValue } shouldSucceedWith StringValue("Not mysterious"),
+            { StringValue("some") - UndefinedValue } shouldFailWith UndefinedBehaviorException("- not defined for strings"),
+            { StringValue("some") * UndefinedValue } shouldFailWith UndefinedBehaviorException("* not defined for strings"),
+            { StringValue("some") / UndefinedValue } shouldFailWith UndefinedBehaviorException("/ not defined for strings")
         )
     override val conversionExamples: Set<ConversionExample>
         get() = setOf(

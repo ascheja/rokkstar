@@ -6,34 +6,34 @@ import net.ascheja.rokkstar.typesystem.ValueTest
 class UndefinedValueTest: ValueTest() {
     override val expressionExamples: Set<ExpressionExample>
         get() = setOf(
-            { UndefinedValue.INSTANCE + UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
-            { UndefinedValue.INSTANCE - UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue + UndefinedValue } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
+            { UndefinedValue - UndefinedValue } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue * UndefinedValue } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue / UndefinedValue } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE + NullValue } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
-            { UndefinedValue.INSTANCE - NullValue } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * NullValue } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / NullValue } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue + NullValue } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
+            { UndefinedValue - NullValue } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue * NullValue } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue / NullValue } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE + StringValue(" world") } shouldSucceedWith StringValue("mysterious world"),
-            { UndefinedValue.INSTANCE - StringValue("") } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * StringValue("") } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / StringValue("") } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue + StringValue(" world") } shouldSucceedWith StringValue("mysterious world"),
+            { UndefinedValue - StringValue("") } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue * StringValue("") } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue / StringValue("") } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE + BooleanValue(false) } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
-            { UndefinedValue.INSTANCE - BooleanValue(false) } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * BooleanValue(false) } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / BooleanValue(false) } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue + BooleanValue(false) } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
+            { UndefinedValue - BooleanValue(false) } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue * BooleanValue(false) } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue / BooleanValue(false) } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE + NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
-            { UndefinedValue.INSTANCE - NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
-            { UndefinedValue.INSTANCE * NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
-            { UndefinedValue.INSTANCE / NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
+            { UndefinedValue + NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("+ not defined for undefined"),
+            { UndefinedValue - NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("- not defined for undefined"),
+            { UndefinedValue * NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("* not defined for undefined"),
+            { UndefinedValue / NumberValue(0.0) } shouldFailWith UndefinedBehaviorException("/ not defined for undefined"),
 
-            { UndefinedValue.INSTANCE.inc() } shouldFailWith UndefinedBehaviorException("++ not defined for undefined"),
-            { UndefinedValue.INSTANCE.dec() } shouldFailWith UndefinedBehaviorException("-- not defined for undefined")
+            { UndefinedValue.inc() } shouldFailWith UndefinedBehaviorException("++ not defined for undefined"),
+            { UndefinedValue.dec() } shouldFailWith UndefinedBehaviorException("-- not defined for undefined")
         )
     override val conversionExamples: Set<ConversionExample>
-        get() = setOf(UndefinedValue.INSTANCE.withConversions("mysterious", false, null))
+        get() = setOf(UndefinedValue.withConversions("mysterious", false, null))
 }

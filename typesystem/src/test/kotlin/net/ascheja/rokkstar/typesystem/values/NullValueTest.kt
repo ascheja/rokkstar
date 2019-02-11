@@ -11,9 +11,9 @@ class NullValueTest: ValueTest() {
             { NullValue + StringValue(" pointer") } shouldSucceedWith StringValue("null pointer"),
             { NullValue + BooleanValue(false) } shouldFailWith UndefinedBehaviorException("+ not defined for null"),
 
-            { NullValue - UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("- not defined for null"),
-            { NullValue * UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("* not defined for null"),
-            { NullValue / UndefinedValue.INSTANCE } shouldFailWith UndefinedBehaviorException("/ not defined for null"),
+            { NullValue - UndefinedValue } shouldFailWith UndefinedBehaviorException("- not defined for null"),
+            { NullValue * UndefinedValue } shouldFailWith UndefinedBehaviorException("* not defined for null"),
+            { NullValue / UndefinedValue } shouldFailWith UndefinedBehaviorException("/ not defined for null"),
 
             { NullValue.inc() } shouldSucceedWith NumberValue(1.0),
             { NullValue.dec() } shouldSucceedWith NumberValue(-1.0)

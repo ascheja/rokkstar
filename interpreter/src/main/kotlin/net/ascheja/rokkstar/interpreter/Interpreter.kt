@@ -169,12 +169,12 @@ class Interpreter(private val context: Context): Visitor<Action> {
         val functionCallContext = context.fork()
         val arguments = functionCallExpression.arguments.map { visitExpression(it).value }
         for ((index, name) in declaration.parameters.withIndex()) {
-            functionCallContext[name] = if (index < arguments.size) arguments[index] else UndefinedValue.INSTANCE
+            functionCallContext[name] = if (index < arguments.size) arguments[index] else UndefinedValue
         }
         val child = Interpreter(functionCallContext)
         val result = when(val bodyAction = child.visitBlockStatement(declaration.body)) {
             is Action.Return -> bodyAction.value
-            else -> UndefinedValue.INSTANCE
+            else -> UndefinedValue
         }
 
         return Action.Return(result)
@@ -205,7 +205,7 @@ class Interpreter(private val context: Context): Visitor<Action> {
     }
 
     override fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): Action.Return {
-        return Action.Return(UndefinedValue.INSTANCE)
+        return Action.Return(UndefinedValue)
     }
 
     override fun visitVariableExpression(variableExpression: VariableExpression): Action.Return {

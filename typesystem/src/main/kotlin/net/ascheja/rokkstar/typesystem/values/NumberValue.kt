@@ -47,9 +47,9 @@ class NumberValue(val value: Double): Value {
     }
 
     override fun div(other: Value): Value = when (other) {
-        is NumberValue -> if (other.value != 0.0) NumberValue(value / other.value) else UndefinedValue.INSTANCE
+        is NumberValue -> if (other.value != 0.0) NumberValue(value / other.value) else UndefinedValue
         is StringValue -> NumberValue(value / other.toNumber())
-        is NullValue -> UndefinedValue.INSTANCE
+        is NullValue -> UndefinedValue
         else -> throw UndefinedBehaviorException("/ not defined for number")
     }
 

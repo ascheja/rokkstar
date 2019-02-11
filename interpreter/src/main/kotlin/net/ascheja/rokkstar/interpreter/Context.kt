@@ -42,7 +42,7 @@ class Context private constructor(
     }
 
     fun getValue(name: Identifier): Value =
-        variables[name] ?: parent?.getValue(name) ?: UndefinedValue.INSTANCE
+        variables[name] ?: parent?.getValue(name) ?: UndefinedValue
 
     fun println(value: Value) = output(value)
 

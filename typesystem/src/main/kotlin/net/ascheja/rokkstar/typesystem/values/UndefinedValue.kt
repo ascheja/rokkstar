@@ -4,11 +4,7 @@ import net.ascheja.rokkstar.typesystem.UndefinedBehaviorException
 import net.ascheja.rokkstar.typesystem.Value
 import net.ascheja.rokkstar.typesystem.ValueConversionException
 
-class UndefinedValue private constructor(): Value {
-
-    companion object {
-        val INSTANCE = UndefinedValue()
-    }
+object UndefinedValue: Value {
 
     override fun toBoolean(): Boolean = false
 

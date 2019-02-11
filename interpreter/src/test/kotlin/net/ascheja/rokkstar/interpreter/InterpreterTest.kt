@@ -18,7 +18,7 @@ class InterpreterTest {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             val variableName = Identifier("some var")
-            assertSame(UndefinedValue.INSTANCE, getValue(variableName))
+            assertSame(UndefinedValue, getValue(variableName))
             visitor.visitStatement(AssignmentStatement(variableName, StringConstant("42")))
             assertEquals("42", getValue(variableName).toString())
         }
@@ -199,7 +199,7 @@ class InterpreterTest {
         withContext("Hello World!", createOutput {}) {
             val visitor = Interpreter(this)
             val varName = Identifier("my var")
-            assertSame(UndefinedValue.INSTANCE, getValue(varName))
+            assertSame(UndefinedValue, getValue(varName))
             visitor.visitStatement(
                 ReadLineStatement(
                     varName
@@ -246,7 +246,7 @@ class InterpreterTest {
                     )
                 ).value.toString()
             )
-            assertSame(UndefinedValue.INSTANCE, getValue(functionParameterName))
+            assertSame(UndefinedValue, getValue(functionParameterName))
         }
     }
 
@@ -311,7 +311,7 @@ class InterpreterTest {
     fun visitUndefinedLiteralExpression() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertSame(UndefinedValue.INSTANCE, visitor.visitExpression(UndefinedConstant()).value)
+            assertSame(UndefinedValue, visitor.visitExpression(UndefinedConstant()).value)
         }
     }
 

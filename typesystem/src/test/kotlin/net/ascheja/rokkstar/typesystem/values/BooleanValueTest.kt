@@ -6,10 +6,10 @@ import net.ascheja.rokkstar.typesystem.ValueTest
 class BooleanValueTest: ValueTest() {
     override val expressionExamples: Set<ExpressionExample>
         get() = setOf(
-            { BooleanValue(true) +  UndefinedValue.INSTANCE} shouldFailWith UndefinedBehaviorException("+ not defined for boolean"),
-            { BooleanValue(true) -  UndefinedValue.INSTANCE} shouldFailWith UndefinedBehaviorException("- not defined for boolean"),
-            { BooleanValue(true) *  UndefinedValue.INSTANCE} shouldFailWith UndefinedBehaviorException("* not defined for boolean"),
-            { BooleanValue(true) /  UndefinedValue.INSTANCE} shouldFailWith UndefinedBehaviorException("/ not defined for boolean"),
+            { BooleanValue(true) +  UndefinedValue} shouldFailWith UndefinedBehaviorException("+ not defined for boolean"),
+            { BooleanValue(true) -  UndefinedValue} shouldFailWith UndefinedBehaviorException("- not defined for boolean"),
+            { BooleanValue(true) *  UndefinedValue} shouldFailWith UndefinedBehaviorException("* not defined for boolean"),
+            { BooleanValue(true) /  UndefinedValue} shouldFailWith UndefinedBehaviorException("/ not defined for boolean"),
 
             { BooleanValue(true) +  NumberValue(0.0)} shouldFailWith UndefinedBehaviorException("+ not defined for boolean"),
             { BooleanValue(true) -  NumberValue(0.0)} shouldFailWith UndefinedBehaviorException("- not defined for boolean"),
