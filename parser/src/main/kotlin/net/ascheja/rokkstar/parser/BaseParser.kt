@@ -5,7 +5,7 @@ import net.ascheja.rokkstar.parser.Token.*
 
 open class BaseParser(lastNameDelegate: LastNameDelegate) {
 
-    internal var lastName: String? by lastNameDelegate
+    protected var lastName: String? by lastNameDelegate
 
     companion object {
         val PRONOUNS = setOf(
@@ -169,7 +169,6 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
             }
             temp
         }.also {
-            lastName = it
             source.next()
         }
     }

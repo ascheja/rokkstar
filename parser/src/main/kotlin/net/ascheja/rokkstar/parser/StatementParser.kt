@@ -48,6 +48,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
     }
 
     private fun parsePoeticStringLiteralAssignment(identifier: Identifier, source: TokenSource): AssignmentStatement {
+        lastName = identifier.value
         source.current mustBe KW_SAYS
         source.next() mustBe Space
         source.next()
@@ -55,6 +56,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
     }
 
     private fun parseLiteralAssignment(identifier: Identifier, source: TokenSource): Statement {
+        lastName = identifier.value
         source.current mustBe any(KW_IS, KW_WAS, KW_WERE)
         source.next() mustBe Space
         source.next()
@@ -254,7 +256,9 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         source.next() mustBe Space
         source.next()
         val expression = parseExpression(source.subList(start, source.index))
-        return AssignmentStatement(parseIdentifier(source), expression)
+        return AssignmentStatement(parseIdentifier(source), expression).also {
+            lastName = it.identifier.value
+        }
     }
 
     private fun extractParameters(source: TokenSource): List<TokenSource> {
