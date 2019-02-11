@@ -92,7 +92,7 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
 
     private fun parseFunctionCallExpression(source: TokenSource): Expression {
         val left = parsePrimaryExpression(source)
-        if (left !is VariableExpression || source.current != KW_TAKING) {
+        if (left !is VariableLookup || source.current != KW_TAKING) {
             return left
         }
         val functionName = left.identifier
@@ -111,12 +111,12 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
                 if (source.current.text.matches(NUMERIC_CHECK)) {
                     parseNumberExpression(source)
                 } else {
-                    VariableExpression(parseIdentifier(source))
+                    VariableLookup(parseIdentifier(source))
                 }
 
             }
         }.also {
-            if (it !is VariableExpression && it !is NumberConstant) {
+            if (it !is VariableLookup && it !is NumberConstant) {
                 source.next()
             }
         }

@@ -59,7 +59,7 @@ interface Visitor<T> {
         is BooleanConstant -> visitBooleanConstant(expression)
         is NullConstant -> visitNullConstant(expression)
         is UndefinedConstant -> visitUndefinedConstant(expression)
-        is VariableExpression -> visitVariableExpression(expression)
+        is VariableLookup -> visitVariableLookup(expression)
         else -> throw IllegalArgumentException("Unknown type of expression: ${expression.javaClass}")
     }
 
@@ -79,5 +79,5 @@ interface Visitor<T> {
 
     fun visitUndefinedConstant(undefinedConstant: UndefinedConstant): T
 
-    fun visitVariableExpression(variableExpression: VariableExpression): T
+    fun visitVariableLookup(variableLookup: VariableLookup): T
 }

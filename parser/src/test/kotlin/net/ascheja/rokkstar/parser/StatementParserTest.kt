@@ -11,7 +11,7 @@ class StatementParserTest {
 
     @Test
     fun `say,whisper,scream,shout statements parsed correctly`() {
-        val expected = PrintLineStatement(VariableExpression(Identifier("my identifier")))
+        val expected = PrintLineStatement(VariableLookup(Identifier("my identifier")))
         assertEquals(expected, createParser().parseStatement("Say my identifier"))
         assertEquals(expected, createParser().parseStatement("Whisper my identifier"))
         assertEquals(expected, createParser().parseStatement("Scream my identifier"))
@@ -29,7 +29,7 @@ class StatementParserTest {
     @Test
     fun `Put into parsed correctly`() {
         assertEquals(
-            AssignmentStatement(Identifier("your heart"), VariableExpression(Identifier("Everything"))),
+            AssignmentStatement(Identifier("your heart"), VariableLookup(Identifier("Everything"))),
             createParser().parseStatement("Put Everything into your heart")
         )
     }
@@ -125,7 +125,7 @@ class StatementParserTest {
             IfStatement(
                 BinaryOperatorExpression(
                     BinaryOperatorExpression.Operator.EQUALS,
-                    VariableExpression(identifier),
+                    VariableLookup(identifier),
                     NullConstant()
                 ),
                 BlockStatement(ReadLineStatement(identifier))
@@ -141,11 +141,11 @@ class StatementParserTest {
             IfStatement(
                 BinaryOperatorExpression(
                     BinaryOperatorExpression.Operator.EQUALS,
-                    VariableExpression(identifier),
+                    VariableLookup(identifier),
                     NullConstant()
                 ),
                 BlockStatement(ReadLineStatement(identifier)),
-                BlockStatement(PrintLineStatement(VariableExpression(identifier)))
+                BlockStatement(PrintLineStatement(VariableLookup(identifier)))
             ),
             createParser().parseStatement("If my name is nothing\nListen to my name\nElse\nShout my name")
         )
@@ -190,7 +190,7 @@ class StatementParserTest {
         val expected = FunctionDeclaration(
             Identifier("Search"),
             listOf(Identifier("Needle"), Identifier("Haystack")),
-            BlockStatement(listOf(ReturnStatement(VariableExpression(Identifier("Needle")))))
+            BlockStatement(listOf(ReturnStatement(VariableLookup(Identifier("Needle")))))
         )
         assertEquals(expected, createParser().parseStatement("Search takes Needle and Haystack\nGive back Needle"))
     }
@@ -201,7 +201,7 @@ class StatementParserTest {
         val parser = StatementParser(delegate)
         val expected = AssignmentStatement(
             Identifier("my heart"),
-            VariableExpression(Identifier("your heart"))
+            VariableLookup(Identifier("your heart"))
         )
         assertEquals(
             expected,

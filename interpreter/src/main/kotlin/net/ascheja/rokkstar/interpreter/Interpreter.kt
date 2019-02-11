@@ -208,7 +208,7 @@ class Interpreter(private val context: Context): Visitor<Action> {
         return Action.Return(UndefinedValue)
     }
 
-    override fun visitVariableExpression(variableExpression: VariableExpression): Action.Return {
-        return Action.Return(context.getValue(variableExpression.identifier))
+    override fun visitVariableLookup(variableLookup: VariableLookup): Action.Return {
+        return Action.Return(context.getValue(variableLookup.identifier))
     }
 }

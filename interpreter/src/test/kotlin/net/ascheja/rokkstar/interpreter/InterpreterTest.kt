@@ -153,7 +153,7 @@ class InterpreterTest {
             this[variableName] = NumberValue(2.0)
             visitor.visitStatement(
                 WhileLoopStatement(
-                    VariableExpression(variableName),
+                    VariableLookup(variableName),
                     BlockStatement(DecrementStatement(variableName, 1), printBla)
                 )
             )
@@ -170,7 +170,7 @@ class InterpreterTest {
                 UntilLoopStatement(
                     BinaryOperatorExpression(
                         BinaryOperatorExpression.Operator.EQUALS,
-                        VariableExpression(variable),
+                        VariableLookup(variable),
                         NumberConstant(2.0)
                     ),
                     BlockStatement(
@@ -234,7 +234,7 @@ class InterpreterTest {
             this[functionName] = FunctionDeclaration(
                 functionName,
                 listOf(functionParameterName),
-                BlockStatement(ReturnStatement(VariableExpression(functionParameterName)))
+                BlockStatement(ReturnStatement(VariableLookup(functionParameterName)))
             )
             val visitor = Interpreter(this)
             assertEquals(

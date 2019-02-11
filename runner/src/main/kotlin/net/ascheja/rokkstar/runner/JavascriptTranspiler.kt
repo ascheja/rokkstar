@@ -8,8 +8,8 @@ import net.ascheja.rokkstar.ast.statements.*
 class JavascriptTranspiler: Visitor<String> {
     private var depth = -1
 
-    override fun visitVariableExpression(variableExpression: VariableExpression): String {
-        return transformIdentifier(variableExpression.identifier)
+    override fun visitVariableLookup(variableLookup: VariableLookup): String {
+        return transformIdentifier(variableLookup.identifier)
     }
 
     override fun visitAssignmentStatement(assignmentStatement: AssignmentStatement): String {

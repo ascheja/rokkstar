@@ -263,7 +263,7 @@ class ExpressionParserTest {
     @Test
     fun `variable parsed correctly`() {
         assertEquals(
-            VariableExpression(Identifier("my variable")),
+            VariableLookup(Identifier("my variable")),
             createParser().parseExpression("my variable")
         )
     }
@@ -273,12 +273,12 @@ class ExpressionParserTest {
         val expected = FunctionCallExpression(
             Identifier("my function"),
             listOf(
-                VariableExpression(Identifier("my variable")),
-                VariableExpression(Identifier("Rock")),
-                VariableExpression(Identifier("Roll")),
+                VariableLookup(Identifier("my variable")),
+                VariableLookup(Identifier("Rock")),
+                VariableLookup(Identifier("Roll")),
                 NumberConstant(666.0),
                 StringConstant("Joy"),
-                VariableExpression(Identifier("Happiness"))
+                VariableLookup(Identifier("Happiness"))
             )
         )
         assertEquals(
