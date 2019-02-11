@@ -31,7 +31,6 @@ fun main(args: Array<String>) {
         displayHelp()
     }
     when (args[0]) {
-        "transpile:js" -> transpileJs(parseProgram(File(args[1])))
         "run" -> {
             System.`in`.bufferedReader().use { inputReader ->
                 runProgram(
@@ -84,32 +83,6 @@ fun runApi(port: Int) {
                     RunResult(output, errors)
                 )
             }
-
-            post("/transpile/js") {
-                val errors = mutableListOf<String>()
-                val transpiled = try {
-                    withTimeout(2000) {
-                        try {
-                            val body = readBody(call.request.receiveChannel())
-                            val program = parseProgram(body)
-                            return@withTimeout JavascriptTranspiler().visitProgram(program)
-                        } catch (e: UnexpectedTokenException) {
-                            errors.add("Unexpected token: ${e.message}")
-                        } catch (e: ParserException) {
-                            errors.add("Parser error: ${e.message}")
-                        } catch (e: RuntimeException) {
-                            errors.add(e.message ?: e.javaClass.simpleName)
-                        }
-                        return@withTimeout null
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    errors.add("timeout reached")
-                    null
-                }
-                call.respond(if (transpiled != null) HttpStatusCode.OK else HttpStatusCode.BadRequest,
-                    TranspileResult(transpiled, errors)
-                )
-            }
         }
     }.start(wait = true)
 }
@@ -127,15 +100,9 @@ suspend fun readBody(receiveChannel: ByteReadChannel): String {
     return body
 }
 
-fun transpileJs(program: Program) {
-    val visitor = JavascriptTranspiler()
-    println(visitor.visitProgram(program))
-}
-
 fun displayHelp(): Nothing {
-    println("rokkstar run <file>             // run the provided file with the rockstar interpreter")
-    println("rokkstar transpile:js <file>    // transpile the provided file to javascript (output to stdout)")
-    println("rokkstar api <port>             // runs the api on the given port")
+    println("rokkstar run <file>         run the provided file with the rockstar interpreter")
+    println("rokkstar api <port>         runs the api on the given port")
     exitProcess(1)
 }
 

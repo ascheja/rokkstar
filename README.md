@@ -2,7 +2,7 @@
 
 Rokkstar
 ========
-This is a WIP parser/interpreter/transpiler for the [rockstar programming language](https://github.com/RockstarLang/rockstar),
+This is a WIP parser and interpreter for the [rockstar programming language](https://github.com/RockstarLang/rockstar),
 written in Kotlin.
 
 Project layout
@@ -18,24 +18,15 @@ Using the runner via gradle
 # starts the api on port 8080 (`Listen to ...` will always receive empty strings)
 ./gradlew run --args='api 8080'
 
-# transpiles the given rockstar source code file to javascript (without type conversions)
-./gradlew run --args='transpile:js <file>'
-
 # launches the interpreter on the given file (Will not work with `Listen to ...`, you have to run it manually in that case)
 ./gradlew run --args='run <file>'
 ```
 
-Using the runner via the Docker image
+Starting the api in a docker container
 -------------------------------------
 ```bash
 # start the api on port 8080
 docker run --rm -p 8080:8080 ascheja/rokkstar api 8080
-
-# transpiles the given rockstar source code file (located in the current folder) to javascript (without type conversions)
-docker run --rm -v $(dirname $(readlink -f .)):/mnt ascheja/rokkstar transpile:js /mnt/[file]
-
-# launches the interpreter on the given file (located in the current folder)
-docker run --rm -ti -v $(dirname $(readlink -f .)):/mnt ascheja/rokkstar run /mnt/[file]
 ```
 
 Plans for the future
