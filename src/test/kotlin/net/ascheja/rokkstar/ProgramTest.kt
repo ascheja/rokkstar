@@ -32,6 +32,13 @@ class ProgramTest {
     }
 
     @Test
+    fun `fibonacci executed correctly`() {
+        val content = readFile("fibonacci.rock")
+        val expectedOutput = readFile("fibonacci.rock.out")
+        assertEquals(expectedOutput, execute(content))
+    }
+
+    @Test
     fun `nested function scopes`() {
         val content = readFile("nested_function_scopes.rock")
         val expectedOutput = readFile("nested_function_scopes.rock.out")
