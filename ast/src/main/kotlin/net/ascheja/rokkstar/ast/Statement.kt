@@ -1,3 +1,3 @@
 package net.ascheja.rokkstar.ast
 
-interface Statement
+interface Statement: Visitable

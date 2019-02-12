@@ -19,7 +19,7 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             val variableName = Identifier("some var")
             assertSame(UndefinedValue, getValue(variableName))
-            visitor.visitStatement(AssignmentStatement(variableName, StringConstant("42")))
+            AssignmentStatement(variableName, StringConstant("42")).accept(visitor)
             assertEquals("42", getValue(variableName).toString())
         }
     }
@@ -29,24 +29,24 @@ class InterpreterTest {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             val block = BlockStatement(BreakStatement())
-            assertTrue(visitor.visitStatement(block) is Action.Break)
+            assertTrue(block.accept(visitor) is Action.Break)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             val block = BlockStatement(ContinueStatement())
-            assertTrue(visitor.visitStatement(block) is Action.Continue)
+            assertTrue(block.accept(visitor) is Action.Continue)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             val block = BlockStatement(ReturnStatement(NumberConstant(42.0)))
-            val action = visitor.visitStatement(block)
+            val action = block.accept(visitor)
             assertTrue(action is Action.Return)
             assertEquals(42.0, (action as Action.Return).value.toNumber(), 0.0)
         }
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             val block = BlockStatement()
-            assertTrue(visitor.visitStatement(block) is Action.Proceed)
+            assertTrue(block.accept(visitor) is Action.Proceed)
         }
     }
 
@@ -54,7 +54,7 @@ class InterpreterTest {
     fun visitBreakStatement() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertTrue(visitor.visitStatement(BreakStatement()) is Action.Break)
+            assertTrue(BreakStatement().accept(visitor) is Action.Break)
         }
     }
 
@@ -62,7 +62,7 @@ class InterpreterTest {
     fun visitContinueStatement() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertTrue(visitor.visitStatement(ContinueStatement()) is Action.Continue)
+            assertTrue(ContinueStatement().accept(visitor) is Action.Continue)
         }
     }
 
@@ -72,13 +72,11 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             val functionName = Identifier("my function")
             assertFalse(getFunction(functionName).identifier == functionName)
-            visitor.visitStatement(
-                FunctionDeclaration(
-                    functionName,
-                    emptyList(),
-                    BlockStatement()
-                )
-            )
+            FunctionDeclaration(
+                functionName,
+                emptyList(),
+                BlockStatement()
+            ).accept(visitor)
             assertTrue(getFunction(functionName).identifier == functionName)
         }
     }
@@ -93,22 +91,22 @@ class InterpreterTest {
 
         withContext("", createOutput { yield("true") }) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(IfStatement(truthyValue, thenBlock, null))
+            IfStatement(truthyValue, thenBlock, null).accept(visitor)
         }
 
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(IfStatement(falsyValue, thenBlock, null))
+            IfStatement(falsyValue, thenBlock, null).accept(visitor)
         }
 
         withContext("", createOutput { yield("true") }) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(IfStatement(truthyValue, thenBlock, elseBlock))
+            IfStatement(truthyValue, thenBlock, elseBlock).accept(visitor)
         }
 
         withContext("", createOutput { yield("false") }) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(IfStatement(falsyValue, thenBlock, elseBlock))
+            IfStatement(falsyValue, thenBlock, elseBlock).accept(visitor)
         }
     }
 
@@ -118,7 +116,7 @@ class InterpreterTest {
             val variableName = Identifier("my variable")
             this[variableName] = NumberValue(1.0)
             val visitor = Interpreter(this)
-            visitor.visitStatement(IncrementStatement(variableName, 1))
+            IncrementStatement(variableName, 1).accept(visitor)
             assertEquals(2.0, getValue(variableName).toNumber(), 0.0)
         }
     }
@@ -129,7 +127,7 @@ class InterpreterTest {
             val variableName = Identifier("my variable")
             this[variableName] = NumberValue(2.0)
             val visitor = Interpreter(this)
-            visitor.visitStatement(DecrementStatement(variableName, 1))
+            DecrementStatement(variableName, 1).accept(visitor)
             assertEquals(1.0, getValue(variableName).toNumber(), 0.0)
         }
     }
@@ -139,24 +137,20 @@ class InterpreterTest {
         val printBla = PrintLineStatement(StringConstant("bla"))
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(
-                WhileLoopStatement(
-                    UndefinedConstant(),
-                    BlockStatement(printBla)
-                )
-            )
+            WhileLoopStatement(
+                UndefinedConstant(),
+                BlockStatement(printBla)
+            ).accept(visitor)
         }
 
         withContext("", createOutput { yield("bla"); yield("bla") }) {
             val visitor = Interpreter(this)
             val variableName = Identifier("my var")
             this[variableName] = NumberValue(2.0)
-            visitor.visitStatement(
-                WhileLoopStatement(
-                    VariableLookup(variableName),
-                    BlockStatement(DecrementStatement(variableName, 1), printBla)
-                )
-            )
+            WhileLoopStatement(
+                VariableLookup(variableName),
+                BlockStatement(DecrementStatement(variableName, 1), printBla)
+            ).accept(visitor)
         }
     }
 
@@ -166,19 +160,17 @@ class InterpreterTest {
         withContext("", createOutput { yield("bla"); yield("bla"); }) {
             this[variable] = NumberValue(0.0)
             val visitor = Interpreter(this)
-            visitor.visitStatement(
-                UntilLoopStatement(
-                    BinaryOperatorExpression(
-                        BinaryOperatorExpression.Operator.EQUALS,
-                        VariableLookup(variable),
-                        NumberConstant(2.0)
-                    ),
-                    BlockStatement(
-                        IncrementStatement(variable, 1),
-                        PrintLineStatement(StringConstant("bla"))
-                    )
+            UntilLoopStatement(
+                BinaryOperatorExpression(
+                    BinaryOperatorExpression.Operator.EQUALS,
+                    VariableLookup(variable),
+                    NumberConstant(2.0)
+                ),
+                BlockStatement(
+                    IncrementStatement(variable, 1),
+                    PrintLineStatement(StringConstant("bla"))
                 )
-            )
+            ).accept(visitor)
         }
     }
 
@@ -186,11 +178,9 @@ class InterpreterTest {
     fun visitPrintLineStatement() {
         withContext("", createOutput { yield("Hello World!") }) {
             val visitor = Interpreter(this)
-            visitor.visitStatement(
-                PrintLineStatement(
-                    StringConstant("Hello World!")
-                )
-            )
+            PrintLineStatement(
+                StringConstant("Hello World!")
+            ).accept(visitor)
         }
     }
 
@@ -200,11 +190,9 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             val varName = Identifier("my var")
             assertSame(UndefinedValue, getValue(varName))
-            visitor.visitStatement(
-                ReadLineStatement(
-                    varName
-                )
-            )
+            ReadLineStatement(
+                varName
+            ).accept(visitor)
             assertEquals("Hello World!", getValue(varName).toString())
         }
     }
@@ -239,12 +227,8 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             assertEquals(
                 "some value",
-                visitor.visitExpression(
-                    FunctionCallExpression(
-                        functionName,
-                        listOf(StringConstant("some value"))
-                    )
-                ).value.toString()
+                (FunctionCallExpression(functionName, listOf(StringConstant("some value"))).accept(visitor) as Action.Return)
+                    .value.toString()
             )
             assertSame(UndefinedValue, getValue(functionParameterName))
         }
@@ -255,11 +239,11 @@ class InterpreterTest {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
             assertTrue(
-                visitor.visitExpression(
+                (
                     UnaryOperatorExpression(
                         UnaryOperatorExpression.Operator.NOT,
                         BooleanConstant(false)
-                    )
+                    ).accept(visitor) as Action.Return
                 ).value.toBoolean()
             )
         }
@@ -271,7 +255,7 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             assertEquals(
                 1.0,
-                visitor.visitExpression(NumberConstant(1.0)).value.toNumber(),
+                (NumberConstant(1.0).accept(visitor) as Action.Return).value.toNumber(),
                 0.0
             )
         }
@@ -283,7 +267,7 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             assertEquals(
                 "bla",
-                visitor.visitExpression(StringConstant("bla")).value.toString()
+                (StringConstant("bla").accept(visitor) as Action.Return).value.toString()
             )
         }
     }
@@ -294,7 +278,7 @@ class InterpreterTest {
             val visitor = Interpreter(this)
             assertEquals(
                 true,
-                visitor.visitExpression(BooleanConstant(true)).value.toBoolean()
+                (BooleanConstant(true).accept(visitor) as Action.Return).value.toBoolean()
             )
         }
     }
@@ -303,7 +287,7 @@ class InterpreterTest {
     fun visitNullLiteralExpression() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertSame(NullValue, visitor.visitExpression(NullConstant()).value)
+            assertSame(NullValue, (NullConstant().accept(visitor) as Action.Return).value)
         }
     }
 
@@ -311,7 +295,7 @@ class InterpreterTest {
     fun visitUndefinedLiteralExpression() {
         withContext("", createOutput {}) {
             val visitor = Interpreter(this)
-            assertSame(UndefinedValue, visitor.visitExpression(UndefinedConstant()).value)
+            assertSame(UndefinedValue, (UndefinedConstant().accept(visitor) as Action.Return).value)
         }
     }
 

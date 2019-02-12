@@ -11,27 +11,6 @@ class Interpreter(private val context: Context): Visitor<Action> {
         return visitBlockStatement(program.root)
     }
 
-    override fun visitStatement(statement: Statement): Action = when (statement) {
-        is AssignmentStatement -> visitAssignmentStatement(statement)
-        is BlockStatement -> visitBlockStatement(statement)
-        is BreakStatement -> visitBreakStatement(statement)
-        is ContinueStatement -> visitContinueStatement(statement)
-        is FunctionDeclaration -> visitFunctionDeclaration(statement)
-        is IfStatement -> visitIfStatement(statement)
-        is IncrementStatement -> visitIncrementStatement(statement)
-        is DecrementStatement -> visitDecrementStatement(statement)
-        is WhileLoopStatement -> visitWhileLoopStatement(statement)
-        is UntilLoopStatement -> visitUntilLoopStatement(statement)
-        is PrintLineStatement -> visitPrintLineStatement(statement)
-        is ReadLineStatement -> visitReadLineStatement(statement)
-        is ReturnStatement -> visitReturnStatement(statement)
-        is Expression -> {
-            visitExpression(statement)
-            Action.Proceed()
-        }
-        else -> throw IllegalArgumentException("Unknown type of statement: ${statement.javaClass}")
-    }
-
     override fun visitAssignmentStatement(assignmentStatement: AssignmentStatement): Action {
         context[assignmentStatement.identifier] = visitExpression(assignmentStatement.expression).value
         return Action.Proceed()
@@ -39,7 +18,7 @@ class Interpreter(private val context: Context): Visitor<Action> {
 
     override fun visitBlockStatement(blockStatement: BlockStatement): Action {
         for (statement in blockStatement) {
-            val action = visitStatement(statement)
+            val action = statement.accept(this)
             if (action !is Action.Proceed) {
                 return action
             }
@@ -128,8 +107,8 @@ class Interpreter(private val context: Context): Visitor<Action> {
         return visitExpression(returnStatement.expression)
     }
 
-    override fun visitExpression(expression: Expression): Action.Return =
-        super.visitExpression(expression) as Action.Return
+    private fun visitExpression(expression: Expression): Action.Return =
+        expression.accept(this) as Action.Return
 
     override fun visitBinaryOperatorExpression(binaryOperatorExpression: BinaryOperatorExpression): Action.Return {
         val left = binaryOperatorExpression.left
