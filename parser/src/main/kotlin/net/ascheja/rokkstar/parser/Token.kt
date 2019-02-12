@@ -58,7 +58,7 @@ sealed class Token(val type: Type, val text: String) {
 
     override fun hashCode(): Int {
         var result = type.hashCode()
-        result = 31 * result + text.hashCode()
+        result = 31 * result + text.toLowerCase().hashCode()
         return result
     }
 
