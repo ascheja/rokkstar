@@ -86,7 +86,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
                             tmp += "."
                         }
                         if (source.current is Word) {
-                            tmp += source.current.text.length % 10
+                            tmp += source.current.text.replace("'", "").length % 10
                         }
                         source.next()
                     }
@@ -265,7 +265,7 @@ class StatementParser(private val lastNameDelegate: LastNameDelegate): BaseParse
         val argumentTokens: MutableList<TokenSource> = mutableListOf()
         var start = source.index
         while (source.current != Eof) {
-            if (source.current in setOf(AMPERSAND, COMMA, Word("n"), KW_AND, Eol)) {
+            if (source.current in setOf(AMPERSAND, COMMA, KW_APO_N_APO, KW_AND, Eol)) {
                 argumentTokens.add(source.subList(start, source.index))
                 source.matchSeq(COMMA, Space, KW_AND) || source.matchSeq(COMMA, KW_AND)
                 if (source.current == Eol) {

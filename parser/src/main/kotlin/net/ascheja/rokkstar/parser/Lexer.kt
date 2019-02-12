@@ -58,6 +58,8 @@ class Lexer(private val input: CharSequence) {
                             yieldAll(clearBuffer(currentPosition))
                             yield(Space)
                             yield(Word("is", currentPosition))
+                        } else {
+                            buffer += char
                         }
                     }
                 }

@@ -35,6 +35,7 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
         val KW_TAKING = Word("taking")
         val KW_TAKES = Word("takes")
 
+        val KW_APO_N_APO = Word("'n'")
         val KW_AND = Word("and")
         val KW_OR = Word("or")
         val KW_NOR = Word("nor")
@@ -43,8 +44,8 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
         val KW_IS = Word("is")
         val KW_WAS = Word("was")
         val KW_WERE = Word("were")
-        val KW_ISNT = Word("isnt")
-        val KW_AINT = Word("aint")
+        val KW_ISNT = Word("isn't")
+        val KW_AINT = Word("ain't")
 
         val KW_AS = Word("as")
         val KW_THAN = Word("than")
@@ -81,13 +82,14 @@ open class BaseParser(lastNameDelegate: LastNameDelegate) {
         val GREATER_EQUAL_ALIASES = setOf("high", "great", "big", "strong").map { Word(it) }
         val LESS_EQUAL_ALIASES = setOf("low", "little", "small", "weak").map { Word(it) }
 
-        val PROPER_VARIABLE_TERMINATORS = setOf(
-            Eol, Eof, KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT, KW_TAKES, KW_TAKING,
-            Garbage(','), Garbage('&'), KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE,
-            KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT, KW_TIMES, KW_OF, KW_OVER
-        )
         val AMPERSAND = Garbage('&')
         val COMMA = Garbage(',')
+
+        val PROPER_VARIABLE_TERMINATORS = setOf(
+            Eol, Eof, KW_SAYS, KW_AND, KW_OR, KW_NOR, KW_IS, KW_ISNT, KW_AINT, KW_TAKES, KW_TAKING,
+            COMMA, AMPERSAND, KW_APO_N_APO, KW_UP, KW_DOWN, KW_INTO, KW_WAS, KW_WERE,
+            KW_PLUS, KW_WITH, KW_MINUS, KW_WITHOUT, KW_TIMES, KW_OF, KW_OVER
+        )
         val NUMERIC_CHECK = Regex("[0-9]+")
     }
 

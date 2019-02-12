@@ -136,7 +136,7 @@ class ExpressionParser internal constructor(lastNameDelegate: LastNameDelegate):
         var start = source.index
         var danglingSeparator = true
         while (source.current != Eof) {
-            if (source.current in setOf(AMPERSAND, COMMA, Word("n"))) {
+            if (source.current in setOf(AMPERSAND, COMMA, KW_APO_N_APO)) {
                 argumentTokens.add(source.subList(start, source.index))
                 danglingSeparator = true
                 if (source.current == COMMA && source.lookahead(1) == KW_AND) {

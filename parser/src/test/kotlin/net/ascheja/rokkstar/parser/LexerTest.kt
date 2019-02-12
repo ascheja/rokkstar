@@ -21,12 +21,16 @@ class LexerTest {
     }
 
     @Test
-    fun `"'" is just ignored everywhere else`() {
+    fun `"'" stays part of word`() {
         assertEquals(
             listOf(
-                Word("RocknRoll")
+                Word("Rock"),
+                Space,
+                Word("'n'"),
+                Space,
+                Word("Roll")
             ),
-            tokenize("Rock'n'Roll")
+            tokenize("Rock 'n' Roll")
         )
     }
 
